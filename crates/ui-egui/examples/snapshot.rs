@@ -355,11 +355,13 @@ fn main() {
         let b = |name: &str, kind, model: &str| BackendConfig { name: name.into(), kind, model: model.into(), base_url: None, ssh_host: None, enabled: true };
         a.backends = vec![
             b("DeepSeek Harness", BackendKind::AgentCli, "dsh"),
+            b("Kimi Code", BackendKind::AgentCli, "kimi"),
             b("Claude Code", BackendKind::AgentCli, "claude-code"),
             b("Kimi K3.1 Pro (OpenRouter)", BackendKind::Openrouter, "moonshotai/kimi-k3.1-pro"),
             b("Claude", BackendKind::Anthropic, "claude-opus-5-5"),
         ];
-        a.dsh_accounts.insert("DeepSeek Harness".into(), Some("DeepSeek account".into()));
+        a.agent_accounts.insert("DeepSeek Harness".into(), Some("DeepSeek account".into()));
+        a.agent_accounts.insert("Kimi Code".into(), None);
         a.state.backend = Some("Claude".into());
         a.builder = Some("Claude Code".into());
         a.extractor = Some("Kimi K3.1 Pro (OpenRouter)".into());

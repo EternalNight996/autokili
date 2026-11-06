@@ -459,9 +459,9 @@ pub struct CraftApp {
     pub detect_hints: Vec<craft_anything_ai::detect::DetectHint>,
     pub detecting: bool,
     /// The DeepSeek account each Harness backend is signed in to (None: not signed in).
-    pub dsh_accounts: std::collections::BTreeMap<String, Option<String>>,
+    pub agent_accounts: std::collections::BTreeMap<String, Option<String>>,
     /// The Harness backend whose sign-in is waiting for the browser, if any.
-    pub dsh_signing: Option<String>,
+    pub agent_signing: Option<String>,
     /// Counts AI choices, so an add that finishes later doesn't undo one made meanwhile.
     pub backend_choices: u64,
     pub log: Vec<LogLine>,
@@ -581,8 +581,8 @@ impl CraftApp {
             detected: None,
             detect_hints: Vec::new(),
             detecting: false,
-            dsh_accounts: Default::default(),
-            dsh_signing: None,
+            agent_accounts: Default::default(),
+            agent_signing: None,
             backend_choices: 0,
             log: Vec::new(),
             key_inputs: Default::default(),
@@ -1212,30 +1212,43 @@ impl CraftApp {
         });
     }
 
-    /// Sign in to the DeepSeek account a Harness backend uses: the Harness's own sign-in, kept in
-    /// its own credential file. The browser and the wait run on a worker thread.
-    pub fn sign_in_dsh(&mut self, name: &str) {
+    /// Sign in to the account an agent keeps itself, through that agent's own tool (the browser and
+    /// the wait run on a worker thread). `program` names the CLI when it isn't the usual one.
+    pub fn sign_in_agent(&mut self, name: &str, tool: &'static str, program: Option<String>) {
         let name = name.to_string();
         let engine = self.engine.clone();
         let label = i18n::trf("Sign in to {name}", &[("name", &name)]);
-        self.dsh_signing = Some(name.clone());
+        self.agent_signing = Some(name.clone());
         self.jobs.spawn(&label, false, move |j| {
             let opts = CallOptions::new(Caller::Ui).with_consent(Consent::Granted).with_cancel(j.cancel.clone());
-            let out = engine.call("ai_dsh_sign_in", json!({}), opts).map_err(|e| e.message)?;
+            let params = match program {
+                Some(program) => json!({ "program": program }),
+                None => json!({}),
+            };
+            let out = engine.call(tool, params, opts).map_err(|e| e.message)?;
             let value = out.to_json().get("result").cloned().unwrap_or(Value::Null);
-            let account = value.get("account").and_then(Value::as_str).map(str::to_string);
+            // Signed in, possibly without a name to show.
+            let account = value
+                .get("signed_in")
+                .and_then(Value::as_bool)
+                .unwrap_or(false)
+                .then(|| value.get("account").and_then(Value::as_str).unwrap_or_default().to_string());
             Ok(Done::SignedIn { name, account })
         });
     }
 
-    /// Sign out of the DeepSeek account: the Harness's own grant is removed, other credentials stay.
-    pub fn sign_out_dsh(&mut self, name: &str) {
+    /// Sign out of the account an agent keeps itself, through that agent's own tool.
+    pub fn sign_out_agent(&mut self, name: &str, tool: &'static str, program: Option<String>) {
         let name = name.to_string();
         let engine = self.engine.clone();
         let label = i18n::trf("Sign out of {name}", &[("name", &name)]);
         self.jobs.spawn(&label, false, move |j| {
             let opts = CallOptions::new(Caller::Ui).with_consent(Consent::Granted).with_cancel(j.cancel.clone());
-            engine.call("ai_dsh_sign_out", json!({}), opts).map_err(|e| e.message)?;
+            let params = match program {
+                Some(program) => json!({ "program": program }),
+                None => json!({}),
+            };
+            engine.call(tool, params, opts).map_err(|e| e.message)?;
             Ok(Done::SignedIn { name, account: None })
         });
     }
@@ -1440,7 +1453,7 @@ impl CraftApp {
             Ok(d) => d,
             Err(e) => {
                 self.detecting = false;
-                self.dsh_signing = None;
+                self.agent_signing = None;
                 self.facts_read(job, None);
                 // A failed or cancelled engine download frees the button to try again.
                 if self.engine_flow.job.is_some_and(|(_, id)| id == job) {
@@ -1515,10 +1528,10 @@ impl CraftApp {
                 self.detected = Some(d);
             }
             Done::SignedIn { name, account } => {
-                self.dsh_signing = None;
-                let how = if account.is_some() { "signed in to DeepSeek" } else { "signed out of DeepSeek" };
+                self.agent_signing = None;
+                let how = if account.is_some() { "signed in" } else { "signed out" };
                 self.log(false, format!("{name}: {how}"));
-                self.dsh_accounts.insert(name, account);
+                self.agent_accounts.insert(name, account);
             }
             Done::Backends(b, builder, extractor, options) => {
                 if self.state.backend.as_ref().is_some_and(|n| !b.iter().any(|c| &c.name == n)) {
@@ -1528,17 +1541,15 @@ impl CraftApp {
                 self.builder = builder;
                 self.extractor = extractor;
                 self.backend_options = options;
-                // The Harness keeps its own account: read it once per refresh, never while drawing.
-                self.dsh_accounts = self
+                // Agents that keep their own account: read each once per refresh, never while drawing.
+                self.agent_accounts = self
                     .backends
                     .iter()
-                    .filter(|b| b.kind == craft_anything_ai::BackendKind::AgentCli && b.model == "dsh")
-                    .map(|b| {
-                        let account = craft_anything_ai::dsh_auth::home().and_then(|home| match craft_anything_ai::dsh_auth::status(&home) {
-                            craft_anything_ai::dsh_auth::SignIn::SignedIn { account } => account,
-                            craft_anything_ai::dsh_auth::SignIn::SignedOut => None,
-                        });
-                        (b.name.clone(), account)
+                    .filter(|b| b.kind == craft_anything_ai::BackendKind::AgentCli)
+                    .filter_map(|b| {
+                        let adapter = craft_anything_ai::cli_agents::adapter_for(&b.model);
+                        let (signed_in, account) = adapter.account_state()?;
+                        Some((b.name.clone(), signed_in.then(|| account.unwrap_or_default())))
                     })
                     .collect();
                 self.model_tuning.retain(|name, state| {

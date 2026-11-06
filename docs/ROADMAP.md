@@ -610,6 +610,15 @@ Owner: open · Status: in progress
       the grant edit, the PKCE challenge (RFC 7636), the state comparison, the loopback callback
       and a stand-in account service; not checked: a live account finishing the browser round trip
       — claimed: lead, branch `feature/r2.2-dsh-account-sign-in`
+- [x] Kimi Code CLI as a coding agent over its own ACP server (`kimi acp`), with the Kimi account
+      it keeps itself: `ai_kimi_sign_in` / `ai_kimi_sign_out` run the CLI's own `kimi login` and
+      `kimi logout` (Craft Anything never keeps the login), the card shows only that account, and
+      the CLI reaches it through `ai login` / `ai logout`. Agents that keep their own account now
+      say so through `AgentAdapter::account_service` / `account_tools` / `account_state`, so the
+      card and the commands are one path for every such agent. Unit tests cover the adapter, the
+      credential check and the tools' argument checks; not checked: a machine with Kimi Code
+      installed, and its ACP server against our tool server
+      — claimed: lead, branch `feature/r2.2-dsh-account-sign-in`
 - [x] A saved agent program path that no longer exists (Codex desktop moves its CLI to a new
       build folder on every update) says so and names the path, instead of "isn't installed or
       isn't on your PATH" (#721); it stays a missing program, so a builder turn isn't retried

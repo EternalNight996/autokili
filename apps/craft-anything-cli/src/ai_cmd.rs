@@ -205,32 +205,40 @@ fn read_key(key_env: &Option<String>, key_stdin: bool) -> Result<Option<String>,
     Ok(None)
 }
 
-/// The DeepSeek Harness backend `name` (or the first one) this account action is for.
-fn dsh_backend(hub: &AiHub, name: Option<&str>) -> Result<BackendConfig, ToolError> {
-    let found = hub.backends().into_iter().find(|b| match name {
-        Some(want) => b.name == want,
-        None => b.model == "dsh",
-    });
-    match found {
-        Some(b) if b.model == "dsh" => Ok(b),
-        Some(b) => Err(ToolError::invalid(format!("{} isn't a DeepSeek Harness backend.", b.name))),
-        None => {
-            Err(ToolError::invalid("No DeepSeek Harness backend is set up.")
-                .with_remediation("Add one: ai add a coding agent with --kind agent_cli --model dsh"))
+/// The backend this account action is for, and the tools that sign its own account in and out:
+/// `name` when given, else the only backend that keeps an account of its own.
+fn account_backend(hub: &AiHub, name: Option<&str>) -> Result<(BackendConfig, (&'static str, &'static str)), ToolError> {
+    let accounts: Vec<(BackendConfig, (&'static str, &'static str))> = hub
+        .backends()
+        .into_iter()
+        .filter_map(|b| {
+            let adapter = craft_anything_ai::cli_agents::adapter_for(&b.model);
+            adapter.account_tools().map(|tools| (b, tools))
+        })
+        .collect();
+    if let Some(want) = name {
+        return accounts.into_iter().find(|(b, _)| b.name == want).ok_or_else(|| ToolError::invalid(format!("{want} doesn't keep an account of its own.")));
+    }
+    match accounts.len() {
+        1 => accounts.into_iter().next().ok_or_else(|| ToolError::invalid("No backend keeps an account.")),
+        0 => Err(ToolError::invalid("No backend keeps an account of its own.")
+            .with_remediation("Add the DeepSeek Harness (--kind agent_cli --model dsh) or Kimi Code (--model kimi).")),
+        _ => {
+            Err(ToolError::invalid("More than one backend keeps its own account.").with_remediation("Name the one to use, e.g. ai login \"DeepSeek Harness\"."))
         }
     }
 }
 
-/// Sign in to the DeepSeek account the Harness uses: its own sign-in, kept in its own file.
+/// Sign in to the account a backend keeps itself, through its own tool.
 fn login(hub: &AiHub, name: Option<&str>, f: Format) -> Result<(), ToolError> {
-    let backend = dsh_backend(hub, name)?;
-    let result = run_account_tool(&hub.engine, "ai_dsh_sign_in")?;
+    let (backend, (sign_in, _)) = account_backend(hub, name)?;
+    let result = run_account_tool(&hub.engine, sign_in)?;
     emit(
         &json!({
             "backend": backend.name,
-            "signed_in": true,
-            "harness": result.get("harness").cloned().unwrap_or(Value::Null),
+            "signed_in": result.get("signed_in").cloned().unwrap_or(json!(true)),
             "account": result.get("account").cloned().unwrap_or(Value::Null),
+            "detail": result.get("output").cloned().unwrap_or(Value::Null),
         }),
         f,
     );
@@ -244,11 +252,18 @@ fn run_account_tool(engine: &std::sync::Arc<craft_anything_engine::Engine>, id: 
     Ok(out.to_json().get("result").cloned().unwrap_or(Value::Null))
 }
 
-/// Sign out of the DeepSeek account: the Harness's own grant is removed.
+/// Sign out of the account a backend keeps itself, through its own tool.
 fn logout(hub: &AiHub, name: Option<&str>, f: Format) -> Result<(), ToolError> {
-    let backend = dsh_backend(hub, name)?;
-    let result = run_account_tool(&hub.engine, "ai_dsh_sign_out")?;
-    emit(&json!({"backend": backend.name, "signed_in": false, "harness": result.get("harness").cloned().unwrap_or(Value::Null)}), f);
+    let (backend, (_, sign_out)) = account_backend(hub, name)?;
+    let result = run_account_tool(&hub.engine, sign_out)?;
+    emit(
+        &json!({
+            "backend": backend.name,
+            "signed_in": false,
+            "detail": result.get("output").cloned().unwrap_or(Value::Null),
+        }),
+        f,
+    );
     Ok(())
 }
 

@@ -331,8 +331,8 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
     }
     let (mut pick, mut builds, mut extracts, mut toggle, mut remove) = (None, None, None, None, None);
     let (mut choose_program, mut usual_program) = (None, None);
-    // The DeepSeek Harness card's account actions.
-    let (mut dsh_sign_in, mut dsh_sign_out) = (None, None);
+    // The account actions on an agent card that shows only its account.
+    let (mut agent_sign_in, mut agent_sign_out) = (None, None);
     let mut save_folder = None;
     // Taken out while the rows borrow the app, and put back after them.
     let mut folder_drafts = std::mem::take(&mut app.folder_inputs);
@@ -557,16 +557,22 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
             });
             // An agent that keeps its own options shows only its account: a status line and one
             // button, so the card stays as small as its one setting.
-            if !shows_options {
+            let adapter = craft_anything_ai::cli_agents::adapter_for(&b.model);
+            if let (Some(service), Some((sign_in_tool, sign_out_tool))) = (adapter.account_service(), adapter.account_tools()) {
                 ui.add_space(8.0);
-                let account = app.dsh_accounts.get(&b.name).cloned().flatten();
-                let signing = app.dsh_signing.as_deref() == Some(b.name.as_str());
+                let account = app.agent_accounts.get(&b.name).cloned().flatten();
+                let signing = app.agent_signing.as_deref() == Some(b.name.as_str());
+                let program = app.backend_options.get(&b.name).and_then(|o| o.command.clone());
                 let (icon, color, text) = if signing {
-                    ("user", t.accent, tr("Signing in to DeepSeek…").to_string())
+                    ("user", t.accent, trf("Signing in to {service}…", &[("service", service)]))
                 } else if let Some(account) = &account {
-                    ("check", t.success, trf("Signed in to DeepSeek: {account}", &[("account", account)]))
+                    if account.is_empty() {
+                        ("check", t.success, trf("Signed in to {service}", &[("service", service)]))
+                    } else {
+                        ("check", t.success, trf("Signed in to {service}: {account}", &[("service", service), ("account", account)]))
+                    }
                 } else {
-                    ("user", t.text_faint, tr("Not signed in to DeepSeek"))
+                    ("user", t.text_faint, trf("Not signed in to {service}", &[("service", service)]))
                 };
                 egui::Frame::new()
                     .fill(t.field)
@@ -586,10 +592,10 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
                                     ui.add(crate::widgets::Spinner::new().size(14.0).color(t.accent));
                                 } else if account.is_some() {
                                     if widgets::secondary(ui, None, "Sign out").clicked() {
-                                        dsh_sign_out = Some(b.name.clone());
+                                        agent_sign_out = Some((b.name.clone(), sign_out_tool, program.clone()));
                                     }
                                 } else if widgets::primary(ui, "Sign in").clicked() {
-                                    dsh_sign_in = Some(b.name.clone());
+                                    agent_sign_in = Some((b.name.clone(), sign_in_tool, program.clone()));
                                 }
                             });
                         });
@@ -665,11 +671,11 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
     if let Some((name, folder)) = save_folder {
         app.set_agent_folder(&name, Some(folder));
     }
-    if let Some(name) = dsh_sign_in {
-        app.sign_in_dsh(&name);
+    if let Some((name, tool, program)) = agent_sign_in {
+        app.sign_in_agent(&name, tool, program);
     }
-    if let Some(name) = dsh_sign_out {
-        app.sign_out_dsh(&name);
+    if let Some((name, tool, program)) = agent_sign_out {
+        app.sign_out_agent(&name, tool, program);
     }
     if let Some(name) = pick_model {
         app.pick_model(&name);

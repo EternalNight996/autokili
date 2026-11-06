@@ -75,6 +75,22 @@ impl AgentAdapter for DeepSeekHarness {
         false
     }
 
+    fn account_service(&self) -> Option<&'static str> {
+        Some("DeepSeek")
+    }
+
+    fn account_tools(&self) -> Option<(&'static str, &'static str)> {
+        Some(("ai_dsh_sign_in", "ai_dsh_sign_out"))
+    }
+
+    fn account_state(&self) -> Option<(bool, Option<String>)> {
+        let home = crate::dsh_auth::home()?;
+        Some(match crate::dsh_auth::status(&home) {
+            crate::dsh_auth::SignIn::SignedIn { account } => (true, account),
+            crate::dsh_auth::SignIn::SignedOut => (false, None),
+        })
+    }
+
     /// The Harness keeps its own DeepSeek sign-in in `$DSH_HOME/.credentials.yaml`: a DeepSeek API
     /// key reference, or the account grant a sign-in leaves there. A missing Harness folder says
     /// nothing, so the run itself reports any problem.

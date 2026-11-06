@@ -14,6 +14,8 @@ pub mod context;
 pub mod detect;
 pub mod dsh_auth;
 pub mod dsh_tools;
+pub mod kimi_auth;
+pub mod kimi_tools;
 mod failure;
 pub mod failure_log;
 pub mod http;
@@ -79,7 +81,7 @@ impl BackendKind {
             BackendKind::Openrouter => openai::OPENROUTER_MODELS,
             BackendKind::Gemini => openai::GEMINI_MODELS,
             BackendKind::OpenaiCompatible => &[],
-            BackendKind::AgentCli => &["claude-code", "codex", "copilot", "grok", "gemini-cli", "opencode", "antigravity", "hermes", "maki", "dsh"],
+            BackendKind::AgentCli => &["claude-code", "codex", "copilot", "grok", "gemini-cli", "opencode", "antigravity", "hermes", "maki", "dsh", "kimi"],
         }
     }
 
@@ -366,6 +368,7 @@ pub fn tools() -> Vec<craft_anything_engine::ToolSpec> {
     let mut v = rebuild::tools::specs();
     v.extend(key_tools::specs());
     v.extend(dsh_tools::specs());
+    v.extend(kimi_tools::specs());
     v.extend(model_tools::specs());
     v.extend(model_options::specs());
     v
