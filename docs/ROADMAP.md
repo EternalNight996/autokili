@@ -600,6 +600,16 @@ Owner: maintainers · Status: in progress
 
 ### R2.2 More coding agents
 Owner: open · Status: in progress
+- [x] The DeepSeek Harness's own DeepSeek account, as sign-in and sign-out in Settings → AI and
+      through `ai login` / `ai logout`: the account sign-in the Harness itself uses
+      (authorization code + PKCE, loopback redirect), whose grant is written only into the
+      Harness's own credential record and whose sign-out keeps every other credential line and
+      still clears locally when the service is unreachable; the Harness card shows only that
+      account, not the program, folder, model and effort controls it keeps itself. Tools
+      `ai_dsh_sign_in` / `ai_dsh_sign_out` carry it to the app, the CLI and MCP. Unit tests cover
+      the grant edit, the PKCE challenge (RFC 7636), the state comparison, the loopback callback
+      and a stand-in account service; not checked: a live account finishing the browser round trip
+      — claimed: lead, branch `feature/r2.2-dsh-account-sign-in`
 - [x] A saved agent program path that no longer exists (Codex desktop moves its CLI to a new
       build folder on every update) says so and names the path, instead of "isn't installed or
       isn't on your PATH" (#721); it stays a missing program, so a builder turn isn't retried

@@ -44,6 +44,9 @@ pub const TOOLS: &[&str] = &[
     "assets_key_set",
     "assets_key_remove",
     "assets_key_status",
+    // The DeepSeek Harness's own account: it touches no target, only the person's sign-in.
+    "ai_dsh_sign_in",
+    "ai_dsh_sign_out",
     "ai_model_options_show",
     "ai_model_options_set",
     // Projects and the rebuild run.

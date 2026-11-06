@@ -231,6 +231,11 @@ pub trait AgentAdapter: Send + Sync {
     /// The environment variable that moves the agent's own folder (its sign-in, settings and
     /// sessions), for [`BackendOptions::config_dir`]. `None`: it has none, and the setting is
     /// ignored.
+    /// Whether Settings shows this agent's own options (program, folder, model, effort). False for
+    /// an agent that keeps all of them itself and needs only its account shown (sign in / sign out).
+    fn shows_options(&self) -> bool {
+        true
+    }
     fn folder_var(&self) -> Option<&'static str> {
         None
     }
