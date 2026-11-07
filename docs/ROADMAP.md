@@ -615,9 +615,11 @@ Owner: open · Status: in progress
       `kimi logout` (Craft Anything never keeps the login), the card shows only that account, and
       the CLI reaches it through `ai login` / `ai logout`. Agents that keep their own account now
       say so through `AgentAdapter::account_service` / `account_tools` / `account_state`, so the
-      card and the commands are one path for every such agent. Unit tests cover the adapter, the
-      credential check and the tools' argument checks; not checked: a machine with Kimi Code
-      installed, and its ACP server against our tool server
+      card and the commands are one path for every such agent. Live on Windows with Kimi Code CLI
+      2.5.2: discovery, adding it, its signed-in state, `kimi acp` reaching Kimi's server (the prompt
+      is then stopped by the account's plan, as the CLI itself is), and a sign-out on an isolated
+      `KIMI_CODE_HOME` that leaves the real one alone; unit tests cover the adapter, the credential
+      check, the program lookup and the tools' argument checks
       — claimed: lead, branch `feature/r2.2-dsh-account-sign-in`
 - [x] A saved agent program path that no longer exists (Codex desktop moves its CLI to a new
       build folder on every update) says so and names the path, instead of "isn't installed or

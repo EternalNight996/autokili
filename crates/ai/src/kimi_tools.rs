@@ -31,7 +31,7 @@ pub fn specs() -> Vec<ToolSpec> {
         spec(
             "ai_kimi_sign_out",
             "Sign out of Kimi Code",
-            "Sign out by running Kimi Code CLI's own logout command, which clears the account it stored. program names the CLI when it isn't the kimi on your PATH.",
+            "Sign out by removing the account Kimi Code stored in its credential file (this version has no logout command); the CLI's configuration stays, so it asks you to sign in again when it next needs the account.",
             "Signs Kimi Code out of your Kimi account.",
             Effects::ACCESSES_NETWORK.union(Effects::LAUNCHES_PROCESS).union(Effects::WRITES_FILESYSTEM),
             sign_out,

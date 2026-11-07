@@ -1,5 +1,6 @@
-//! Kimi Code CLI (`kimi acp`): its own Kimi account (`kimi login` / `kimi logout`) and its own
-//! models, sessions and workspace settings, so Settings shows only that account.
+//! Kimi Code CLI (`kimi acp`): its own Kimi account (`kimi login`, a device-code flow, and a
+//! credential file for signing out) and its own models, sessions and workspace settings, so
+//! Settings shows only that account.
 
 use super::*;
 
@@ -42,7 +43,8 @@ impl AgentAdapter for KimiCode {
         Some((crate::kimi_auth::signed_in(&home), None))
     }
 
-    /// The CLI's own account: a credential file under its folder (`KIMI_SHARE_DIR`, else ~/.kimi).
+    /// The CLI's own account: a credential file under its folder (`KIMI_CODE_HOME`, else
+    /// `~/.kimi-code`).
     fn signed_in(&self, _program: &str) -> Option<bool> {
         crate::kimi_auth::home().map(|home| crate::kimi_auth::signed_in(&home))
     }

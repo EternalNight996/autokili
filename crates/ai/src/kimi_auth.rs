@@ -7,28 +7,27 @@ use craft_anything_platform::process::Process;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-/// The environment variable that moves Kimi Code CLI's folder (`~/.kimi` by default).
-pub const SHARE_VAR: &str = "KIMI_SHARE_DIR";
-/// How long the CLI's own sign-in waits for the browser.
-pub const SIGN_IN_WAIT: Duration = Duration::from_secs(15 * 60);
-/// A sign-out is quick; it only clears what's stored.
-const SIGN_OUT_WAIT: Duration = Duration::from_secs(60);
+/// The environment variable that moves Kimi Code CLI's folder (`~/.kimi-code` by default).
+pub const SHARE_VAR: &str = "KIMI_CODE_HOME";
+/// How long the CLI's own sign-in waits: its device code stays good for 30 minutes.
+pub const SIGN_IN_WAIT: Duration = Duration::from_secs(30 * 60);
 /// The most of the CLI's output kept.
 const MAX_OUTPUT: usize = 256 * 1024;
 
-/// The folder Kimi Code CLI keeps its configuration and credentials in.
+/// The folder Kimi Code CLI keeps its configuration and credentials in: `KIMI_CODE_HOME` when the
+/// person set one, else `~/.kimi-code`, and the archived Kimi CLI's `~/.kimi` only when the
+/// current one isn't there at all.
 pub fn home() -> Option<PathBuf> {
     if let Some(dir) = std::env::var_os(SHARE_VAR).filter(|v| !v.is_empty()) {
         return Some(PathBuf::from(dir));
     }
     let usual = dirs::home_dir()?;
-    let current = usual.join(".kimi");
+    let current = usual.join(".kimi-code");
     if current.is_dir() {
         return Some(current);
     }
-    // Kimi Code's app folder, for an install that keeps its data there.
-    let app = usual.join(".kimi-code");
-    Some(if app.is_dir() { app } else { current })
+    let legacy = usual.join(".kimi");
+    Some(if legacy.is_dir() { legacy } else { current })
 }
 
 /// Whether the CLI is signed in: a credential file it wrote (`credentials/*.json`).
@@ -39,12 +38,17 @@ pub fn signed_in(home: &Path) -> bool {
 
 /// The `kimi` program to run: the one the person chose for this backend, else the one on PATH.
 pub fn find_program(chosen: Option<&str>) -> Result<String, ToolError> {
+    find_program_in(chosen, craft_anything_platform::which("kimi"))
+}
+
+/// The same choice, with what the PATH search found (so a test never depends on this computer).
+pub(crate) fn find_program_in(chosen: Option<&str>, found: Option<std::path::PathBuf>) -> Result<String, ToolError> {
     if let Some(chosen) = chosen.map(str::trim).filter(|c| !c.is_empty()) {
         return Ok(chosen.to_string());
     }
-    craft_anything_platform::which("kimi").map(|p| p.display().to_string()).ok_or_else(|| {
+    found.map(|p| p.display().to_string()).ok_or_else(|| {
         ToolError::new(ErrorCode::EngineMissing, "Kimi Code CLI isn't installed, or isn't on your PATH.")
-            .with_remediation("Install Kimi Code CLI (irm https://code.kimi.com/kimi-code/install.ps1 | iex), or set its program in Settings → AI.")
+            .with_remediation("Install Kimi Code CLI (npm install -g @moonshot-ai/kimi-code), or set its program in Settings → AI.")
     })
 }
 
@@ -54,9 +58,17 @@ pub fn sign_in(program: &str) -> Result<String, ToolError> {
     run(program, "login", SIGN_IN_WAIT)
 }
 
-/// Sign out by running the CLI's own `kimi logout`.
-pub fn sign_out(program: &str) -> Result<String, ToolError> {
-    run(program, "logout", SIGN_OUT_WAIT)
+/// Sign out: the CLI keeps its account in a credential file, and this version has no `kimi logout`
+/// command, so removing that file is the sign-out. The CLI's configuration stays, so it asks the
+/// person to sign in again the next time it needs the account.
+pub fn sign_out(_program: &str) -> Result<String, ToolError> {
+    let Some(home) = home() else { return Err(ToolError::new(ErrorCode::BadSettings, "Couldn't find the Kimi Code folder on this computer.")) };
+    let file = home.join("credentials").join("kimi-code.json");
+    match std::fs::remove_file(&file) {
+        Ok(()) => Ok("Signed out of Kimi Code.".to_string()),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok("Kimi Code wasn't signed in.".to_string()),
+        Err(e) => Err(ToolError::new(ErrorCode::FileError, format!("Couldn't remove {}: {e}", file.display()))),
+    }
 }
 
 /// Run one of the CLI's own account commands and give back the last of what it said.
@@ -104,9 +116,11 @@ mod tests {
 
     #[test]
     fn a_missing_program_is_named_with_a_fix() {
-        let err = find_program(Some("  ")).unwrap_err();
+        let err = find_program_in(Some("  "), None).unwrap_err();
         assert!(err.remediation.is_some(), "{err:?}");
-        assert_eq!(find_program(Some("C:/tools/kimi.exe")).unwrap(), "C:/tools/kimi.exe");
+        assert_eq!(find_program_in(Some("C:/tools/kimi.exe"), None).unwrap(), "C:/tools/kimi.exe");
+        let found = std::path::PathBuf::from("C:/Program Files/nodejs/kimi.cmd");
+        assert_eq!(find_program_in(None, Some(found.clone())).unwrap(), found.display().to_string());
     }
 
     #[test]
