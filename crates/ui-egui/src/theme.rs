@@ -20,10 +20,12 @@ pub enum ThemeKind {
     Editorial,
     /// Pop art: primary yellow, black outlines, one loud red, thick strokes, hard shadow.
     Pop,
+    /// Marvel: near-black screen, Marvel red outlines, gold highlights, cinematic contrast.
+    Marvel,
 }
 
 impl ThemeKind {
-    pub const ALL: [ThemeKind; 4] = [ThemeKind::Studio, ThemeKind::StudioLight, ThemeKind::Editorial, ThemeKind::Pop];
+    pub const ALL: [ThemeKind; 5] = [ThemeKind::Studio, ThemeKind::StudioLight, ThemeKind::Editorial, ThemeKind::Pop, ThemeKind::Marvel];
 
     pub fn label(self) -> &'static str {
         match self {
@@ -31,6 +33,7 @@ impl ThemeKind {
             ThemeKind::StudioLight => "Studio Light",
             ThemeKind::Editorial => "Editorial Brutal",
             ThemeKind::Pop => "Pop Art",
+            ThemeKind::Marvel => "Marvel",
         }
     }
 
@@ -41,6 +44,7 @@ impl ThemeKind {
             ThemeKind::StudioLight => "studio-light",
             ThemeKind::Editorial => "editorial-brutal",
             ThemeKind::Pop => "pop",
+            ThemeKind::Marvel => "marvel",
         }
     }
 
@@ -51,6 +55,7 @@ impl ThemeKind {
             ThemeKind::StudioLight => "Light",
             ThemeKind::Editorial => "Brutal",
             ThemeKind::Pop => "Pop",
+            ThemeKind::Marvel => "Marvel",
         }
     }
 
@@ -59,6 +64,7 @@ impl ThemeKind {
             "studio-light" | "light" => ThemeKind::StudioLight,
             "editorial-brutal" | "editorial" | "brutal" => ThemeKind::Editorial,
             "pop" | "pop-art" | "popart" => ThemeKind::Pop,
+            "marvel" | "marvel-style" => ThemeKind::Marvel,
             _ => ThemeKind::Studio,
         }
     }
@@ -116,6 +122,9 @@ pub const EDITORIAL_ACCENT: Color32 = Color32::from_rgb(0xc9, 0x34, 0x0f);
 
 /// Pop art's single accent: loud red, paper-white text passes WCAG AA on it.
 pub const POP_ACCENT: Color32 = Color32::from_rgb(0xd4, 0x2a, 0x25);
+
+/// Marvel red: the one accent on the near-black screen; white passes WCAG AA on it.
+pub const MARVEL_ACCENT: Color32 = Color32::from_rgb(0xd9, 0x1e, 0x24);
 
 pub const SEEN_IT: Color32 = Color32::from_rgb(0x3f, 0xb2, 0x7f);
 pub const WORKED_OUT: Color32 = Color32::from_rgb(0x5b, 0x8d, 0xef);
@@ -275,6 +284,39 @@ impl Tokens {
                 border: 2.5,
                 hard_shadow: true,
             },
+            // Marvel: near-black screen, red outlines, gold highlights, sharp corners.
+            ThemeKind::Marvel => Tokens {
+                kind,
+                chrome: Color32::from_rgb(0x15, 0x15, 0x17),
+                canvas: Color32::from_rgb(0x0e, 0x0e, 0x10),
+                card: Color32::from_rgb(0x1b, 0x1b, 0x1f),
+                card_border: Color32::from_rgb(0xd9, 0x1e, 0x24),
+                raised: Color32::from_rgb(0x24, 0x24, 0x2a),
+                field: Color32::from_rgb(0x12, 0x12, 0x14),
+                field_border: Color32::from_rgb(0x6e, 0x6e, 0x76),
+                hover: Color32::from_rgb(0x2a, 0x2a, 0x31),
+                pressed: Color32::from_rgb(0x33, 0x33, 0x3b),
+                text: Color32::from_rgb(0xf4, 0xf4, 0xf5),
+                text_dim: Color32::from_rgb(0xc7, 0xc7, 0xcc),
+                text_faint: Color32::from_rgb(0x9a, 0x9a, 0xa2),
+                icon: Color32::from_rgb(0xf4, 0xf4, 0xf5),
+                accent: MARVEL_ACCENT,
+                accent_hover: Color32::from_rgb(0xff, 0x3b, 0x41),
+                accent_ink: Color32::from_rgb(0xff, 0x6b, 0x70),
+                accent_soft: Color32::from_rgba_unmultiplied(0xd9, 0x1e, 0x24, 50),
+                on_accent: Color32::from_rgb(0xff, 0xff, 0xff),
+                separator: Color32::from_rgb(0x3a, 0x3a, 0x42),
+                shadow: Color32::from_black_alpha(190),
+                danger: Color32::from_rgb(0xff, 0x4d, 0x4f),
+                warning: Color32::from_rgb(0xff, 0xc0, 0x00),
+                success: Color32::from_rgb(0x34, 0xc7, 0x59),
+                code_bg: Color32::from_rgb(0x0a, 0x0a, 0x0b),
+                radius_sm: 0.0,
+                radius: 0.0,
+                radius_lg: 0.0,
+                border: 2.0,
+                hard_shadow: false,
+            },
         }
     }
 
@@ -284,7 +326,7 @@ impl Tokens {
     }
 
     pub fn dark(&self) -> bool {
-        self.kind == ThemeKind::Studio
+        matches!(self.kind, ThemeKind::Studio | ThemeKind::Marvel)
     }
 
     pub fn r_sm(&self) -> CornerRadius {
@@ -851,6 +893,7 @@ mod tests {
             match k {
                 ThemeKind::Editorial => assert_eq!(t.accent, EDITORIAL_ACCENT),
                 ThemeKind::Pop => assert_eq!(t.accent, POP_ACCENT),
+                ThemeKind::Marvel => assert_eq!(t.accent, MARVEL_ACCENT),
                 _ => assert_eq!(t.accent, BRAND),
             }
         }
