@@ -68,6 +68,18 @@ pub fn env_keys(get: impl Fn(&str) -> Option<String>) -> Vec<Detected> {
         },
         needs_key: !found,
     });
+    // DeepSeek is a general model API like Gemini and Kimi: offered even before a key is found.
+    // (When the key is set, the provider table above already added it.)
+    if let Some(p) = crate::providers::PROVIDERS.iter().find(|p| p.key_env == "DEEPSEEK_API_KEY") {
+        let found = get("DEEPSEEK_API_KEY").is_some_and(|v| !v.trim().is_empty());
+        if !found {
+            out.push(Detected {
+                suggestion: cfg_at(p.name, p.kind, p.default_model, p.base_url),
+                reason: "DeepSeek: paste a key from platform.deepseek.com".into(),
+                needs_key: true,
+            });
+        }
+    }
     // OpenCode Go: a paid subscription, so it is offered only when its key is already set. Gemini
     // and Kimi are offered keyless because they are general model APIs.
     let go = ["OPENCODEGO_API_KEY", "OPENCODE_GO_API_KEY"].iter().any(|v| get(v).is_some_and(|k| !k.trim().is_empty()));
@@ -463,8 +475,9 @@ mod tests {
         assert!(p.reason.contains("MOONSHOT_API_KEY"));
         assert_eq!(p.suggestion.base_url.as_deref(), Some("https://api.moonshot.ai/v1"));
         assert_eq!(p.suggestion.model.as_str(), "kimi-k3.1-pro");
-        // A key that nobody has does not add a row.
-        assert!(d.iter().all(|x| x.suggestion.name != "DeepSeek"));
+        // A key that nobody has does not add a paid row. DeepSeek is a general model API, so it is
+        // offered keyless like Gemini and Kimi; without a key it asks for one.
+        assert!(d.iter().all(|x| x.suggestion.name != "DeepSeek" || x.needs_key));
     }
 
     #[test]

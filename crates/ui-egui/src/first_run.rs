@@ -85,9 +85,11 @@ fn choice_card(ui: &mut Ui, w: f32, icon: &str, title: &str, blurb: &str) -> egu
     widgets::big_card(ui, Vec2::new(w, 200.0), icon, title, blurb, None)
 }
 
-fn header(ui: &mut Ui, title: &str, sub: &str) {
+fn header(ui: &mut Ui, kicker: &str, title: &str, sub: &str) {
     let t = Tokens::get(ui.ctx());
-    ui.label(theme::heading(tr(title), theme::TITLE));
+    ui.label(RichText::new(kicker).font(theme::mono(12.0)).color(t.text_faint));
+    ui.add_space(4.0);
+    ui.label(theme::display(ui, tr(title), theme::DISPLAY));
     ui.add_space(4.0);
     ui.label(RichText::new(tr(sub)).size(theme::BODY).color(t.text_dim));
     ui.add_space(22.0);
@@ -97,6 +99,7 @@ fn brain(app: &mut CraftApp, ui: &mut Ui, width: f32) {
     let t = Tokens::get(ui.ctx());
     header(
         ui,
+        "02 / BUILDER",
         "Who builds what you make",
         "A coding agent such as Claude Code builds it, and an AI answers your questions in plain words. Change this any time in Settings → AI.",
     );
@@ -193,15 +196,15 @@ fn brain_card(app: &mut CraftApp, ui: &mut Ui, d: &Detected) {
     let configured = app.backends.iter().any(|b| b.name == name);
     let frame = egui::Frame::new()
         .fill(if on { t.accent_soft } else { t.card })
-        .stroke(egui::Stroke::new(1.0, if on { t.accent } else { t.card_border }))
+        .stroke(egui::Stroke::new(t.border, if on { t.accent } else { t.card_border }))
         .corner_radius(t.r_lg())
-        .inner_margin(egui::Margin::same(14));
+        .inner_margin(egui::Margin::same(16));
     frame.show(ui, |ui| {
         ui.set_width(ui.available_width());
         ui.horizontal(|ui| {
-            let (rect, _) = ui.allocate_exact_size(Vec2::splat(40.0), egui::Sense::hover());
-            ui.painter().rect_filled(rect, t.radius, t.raised);
-            icons::paint(ui, rect, kind_icon(d.suggestion.kind), 20.0, t.accent_ink);
+            let (rect, _) = ui.allocate_exact_size(Vec2::splat(44.0), egui::Sense::hover());
+            ui.painter().rect_filled(rect, t.radius, t.accent_soft);
+            icons::paint(ui, rect, kind_icon(d.suggestion.kind), 22.0, t.accent_ink);
             ui.vertical(|ui| {
                 ui.label(theme::heading(&name, theme::CARD));
                 ui.label(RichText::new(&d.reason).color(t.text_dim).size(theme::SMALL));
@@ -266,7 +269,7 @@ fn option_row(ui: &mut Ui, icon: &str, title: &str, sub: &str, on: bool) -> egui
 
 fn purpose(app: &mut CraftApp, ui: &mut Ui, width: f32) {
     let t = Tokens::get(ui.ctx());
-    header(ui, "What brings you here?", "One line, in plain words. It stays on this computer and is never sent anywhere.");
+    header(ui, "03 / PURPOSE", "What brings you here?", "One line, in plain words. It stays on this computer and is never sent anywhere.");
     ui.allocate_ui(Vec2::new(width, 400.0), |ui| {
         for (p, title, sub) in crate::state::purposes() {
             let on = app.state.purpose == p;
