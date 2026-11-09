@@ -173,7 +173,8 @@ impl ComicCard {
 
 /// A card for the main work surfaces; Marvel gets the cut corner.
 pub fn comic_card(t: &Tokens) -> ComicCard {
-    ComicCard { frame: card(t), accent: t.accent, corner: t.kind == crate::theme::ThemeKind::Marvel }
+    let comic = matches!(t.kind, crate::theme::ThemeKind::Pop | crate::theme::ThemeKind::Marvel);
+    ComicCard { frame: card(t), accent: t.accent, corner: comic }
 }
 
 /// A quieter, denser panel frame for the workbench.

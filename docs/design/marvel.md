@@ -58,7 +58,7 @@
 - 无圆角；卡片统一红描边。
 - 强调色只有 Marvel 红；金色只出现在徽章/警示。
 - 正文对比度 ≥ 4.5:1，边框 ≥ 3:1（theme.rs 单测覆盖）。
-- 主题开关五档：Studio / Light / Brutal / Pop / **Marvel**，默认 Marvel。
+- 主题开关五档：Studio / Light / Brutal / **Pop** / Marvel，默认 Pop。
 
 ## 7. 漫画化细节（本轮）
 

@@ -461,7 +461,7 @@ pub const TINY: f32 = 11.0;
 pub fn display(ui: &egui::Ui, text: impl Into<String>, size: f32) -> egui::RichText {
     let t = Tokens::get(ui.ctx());
     let text: String = text.into();
-    let text = if t.kind == ThemeKind::Marvel { text.to_uppercase() } else { text };
+    let text = if matches!(t.kind, ThemeKind::Pop | ThemeKind::Marvel) { text.to_uppercase() } else { text };
     heading(text, size)
 }
 
