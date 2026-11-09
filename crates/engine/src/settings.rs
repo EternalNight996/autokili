@@ -198,7 +198,7 @@ impl Default for Settings {
             version: SETTINGS_VERSION,
             mode: Mode::Beginner,
             deep_mode: false,
-            theme: "pop".into(),
+            theme: "marvel".into(),
             language: String::new(),
             first_run_done: false,
             engines: EngineSettings::default(),
