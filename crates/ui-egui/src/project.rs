@@ -1655,10 +1655,15 @@ fn claims_list(ui: &mut Ui, c: &CheckResult, t: &Tokens) {
     };
     for claim in c.claims.iter().filter(|x| !x.passed) {
         let text = if claim.detail.is_empty() { claim.title.clone() } else { format!("{} — {}", claim.title, claim.detail) };
+        ui.separator();
         row(ui, "triangle-alert", t.warning, text);
     }
     for u in &c.unknowns {
+        ui.separator();
         row(ui, "info", t.text_dim, trf("Not compared yet: {what}", &[("what", u)]));
+    }
+    if c.claims.iter().any(|x| x.passed) {
+        ui.separator();
     }
     if c.claims.iter().any(|x| x.passed) {
         egui::CollapsingHeader::new(RichText::new(tr("Show the ones that are met")).size(theme::SMALL)).id_salt(("claims", c.round)).show(ui, |ui| {
@@ -1693,12 +1698,18 @@ fn check_card(app: &mut CraftApp, ui: &mut Ui, ctx: &egui::Context, ws: &Workspa
             picked = picked.min(c.pages.len() - 1);
             ui.add_space(6.0);
             for (i, p) in c.pages.iter().enumerate() {
-                let text = format!("{}  {:.0}%", if p.dir.is_empty() { tr("start page") } else { p.name.clone() }, p.similarity);
+                let name = if p.dir.is_empty() { tr("start page") } else { p.name.clone() };
                 let colour = if p.similarity >= app.settings.build.good_enough { t.text_dim } else { t.warning };
-                if ui.selectable_label(i == picked, RichText::new(text).font(theme::mono(12.5)).color(colour)).clicked() {
-                    picked = i;
-                    ui.data_mut(|d| d.insert_temp(picked_id, i));
-                }
+                ui.separator();
+                ui.horizontal(|ui| {
+                    if ui.selectable_label(i == picked, RichText::new(name).font(theme::mono(12.5)).color(colour)).clicked() {
+                        picked = i;
+                        ui.data_mut(|d| d.insert_temp(picked_id, i));
+                    }
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        ui.label(RichText::new(format!("{:.0}%", p.similarity)).font(theme::mono(12.5)).color(colour));
+                    });
+                });
             }
         }
         let dir = c.pages.get(picked).map(|p| p.dir.as_str()).unwrap_or("");
