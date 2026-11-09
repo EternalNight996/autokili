@@ -1,4 +1,4 @@
-//! Render the Craft Anything UI offscreen (no window) and save PNGs of the main screens.
+//! Render the OpenKill UI offscreen (no window) and save PNGs of the main screens.
 //!
 //! ```sh
 //! cargo run -p craft-anything-ui-egui --example snapshot -- --out-dir target/snapshots [--scale 2] [--light] [--only NAME] [--width 1440] [--height 900] [--lang fr]

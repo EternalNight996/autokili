@@ -1,4 +1,4 @@
-//! The Craft Anything engine: one session, one registry of tools, one way in.
+//! The OpenKill engine: one session, one registry of tools, one way in.
 //!
 //! The desktop UI, the CLI, the MCP server and the built-in AI agent all call [`Engine::call`]
 //! with a tool id and JSON params. The engine checks availability and consent, runs the tool,
