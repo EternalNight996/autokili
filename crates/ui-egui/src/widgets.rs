@@ -143,7 +143,37 @@ pub fn focus_ring(ui: &Ui, resp: &Response, rect: egui::Rect) {
 
 /// A card frame: a soft rounded box with a hairline edge.
 pub fn card(t: &Tokens) -> Frame {
-    Frame::new().fill(t.card).stroke(Stroke::new(1.0, t.card_border)).corner_radius(t.r_lg()).inner_margin(Margin::same(16))
+    Frame::new().fill(t.card).stroke(Stroke::new(t.border, t.card_border)).corner_radius(t.r_lg()).inner_margin(Margin::same(16))
+}
+
+/// A card with a comic corner: Marvel cuts a red wedge into the top-left corner.
+pub struct ComicCard {
+    frame: Frame,
+    accent: egui::Color32,
+    corner: bool,
+}
+
+impl ComicCard {
+    pub fn inner_margin(mut self, margin: Margin) -> Self {
+        self.frame = self.frame.inner_margin(margin);
+        self
+    }
+
+    pub fn show<R>(self, ui: &mut Ui, add: impl FnOnce(&mut Ui) -> R) -> egui::InnerResponse<R> {
+        let out = self.frame.show(ui, add);
+        if self.corner {
+            let r = out.response.rect;
+            let s = 26.0f32.min(r.width() / 4.0).min(r.height() / 4.0);
+            let pts = vec![r.left_top(), r.left_top() + Vec2::new(s, 0.0), r.left_top() + Vec2::new(0.0, s)];
+            ui.painter().add(egui::Shape::convex_polygon(pts, self.accent, Stroke::NONE));
+        }
+        out
+    }
+}
+
+/// A card for the main work surfaces; Marvel gets the cut corner.
+pub fn comic_card(t: &Tokens) -> ComicCard {
+    ComicCard { frame: card(t), accent: t.accent, corner: t.kind == crate::theme::ThemeKind::Marvel }
 }
 
 /// A quieter, denser panel frame for the workbench.

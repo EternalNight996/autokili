@@ -1676,7 +1676,7 @@ fn claims_list(ui: &mut Ui, c: &CheckResult, t: &Tokens) {
 
 fn check_card(app: &mut CraftApp, ui: &mut Ui, ctx: &egui::Context, ws: &Workspace, c: &CheckResult) {
     let t = Tokens::get(ui.ctx());
-    widgets::card(&t).show(ui, |ui| {
+    widgets::comic_card(&t).show(ui, |ui| {
         ui.set_width(ui.available_width());
         ui.horizontal(|ui| {
             icons::show(ui, "scan-search", 18.0, t.accent_ink);
