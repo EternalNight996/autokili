@@ -106,11 +106,11 @@ pub fn hero(app: &mut CraftApp, ui: &mut Ui, w: f32) {
     }
     ui.label(RichText::new("01 / MAKE").font(theme::mono(12.0)).color(t.text_faint));
     ui.add_space(4.0);
-    ui.label(theme::heading(tr("What do you want to make?"), theme::DISPLAY));
+    ui.label(theme::display(ui, tr("What do you want to make?"), theme::DISPLAY));
     ui.add_space(6.0);
     ui.label(RichText::new(tr("Choose what to recreate, say what you want, then press Start.")).size(theme::LEAD).color(t.text_dim));
     ui.add_space(16.0);
-    widgets::card(&t).inner_margin(Margin::same(20)).show(ui, |ui| {
+    widgets::comic_card(&t).inner_margin(Margin::same(20)).show(ui, |ui| {
         ui.set_width(w - 50.0);
         step_title(ui, 1, "What do you want to recreate?");
         ui.add_space(12.0);
@@ -164,11 +164,11 @@ pub fn hero(app: &mut CraftApp, ui: &mut Ui, w: f32) {
 /// edits in place, and what to change. There's no original to pick, so no Clean room / Deep choice.
 fn mine(app: &mut CraftApp, ui: &mut Ui, w: f32) {
     let t = Tokens::get(ui.ctx());
-    ui.label(theme::heading(tr("Work on a project you already have"), theme::DISPLAY));
+    ui.label(theme::display(ui, tr("Work on a project you already have"), theme::DISPLAY));
     ui.add_space(6.0);
     ui.label(RichText::new(tr("Pick its folder, say what you want, then press Start.")).size(theme::LEAD).color(t.text_dim));
     ui.add_space(16.0);
-    widgets::card(&t).inner_margin(Margin::same(20)).show(ui, |ui| {
+    widgets::comic_card(&t).inner_margin(Margin::same(20)).show(ui, |ui| {
         ui.set_width(w - 50.0);
         step_title(ui, 1, "Where is your project?");
         ui.add_space(12.0);
@@ -271,7 +271,7 @@ fn engine_choices(app: &mut CraftApp, ui: &mut Ui) {
 /// "Just look inside": what to look at, each opening straight away. Nothing is built or run.
 fn look(app: &mut CraftApp, ui: &mut Ui, w: f32) {
     let t = Tokens::get(ui.ctx());
-    ui.label(theme::heading(tr("What do you want to look inside?"), theme::DISPLAY));
+    ui.label(theme::display(ui, tr("What do you want to look inside?"), theme::DISPLAY));
     ui.add_space(6.0);
     ui.label(RichText::new(tr("We only read it; nothing runs. Every answer shows how sure we are.")).size(theme::LEAD).color(t.text_dim));
     ui.add_space(22.0);
