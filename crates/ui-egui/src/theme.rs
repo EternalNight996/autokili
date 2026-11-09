@@ -16,15 +16,18 @@ pub enum ThemeKind {
     #[default]
     Studio,
     StudioLight,
+    /// Editorial Brutalism: warm paper, ink rules, one vermilion accent, zero radii.
+    Editorial,
 }
 
 impl ThemeKind {
-    pub const ALL: [ThemeKind; 2] = [ThemeKind::Studio, ThemeKind::StudioLight];
+    pub const ALL: [ThemeKind; 3] = [ThemeKind::Studio, ThemeKind::StudioLight, ThemeKind::Editorial];
 
     pub fn label(self) -> &'static str {
         match self {
             ThemeKind::Studio => "Studio (dark)",
             ThemeKind::StudioLight => "Studio Light",
+            ThemeKind::Editorial => "Editorial Brutal",
         }
     }
 
@@ -33,12 +36,23 @@ impl ThemeKind {
         match self {
             ThemeKind::Studio => "studio",
             ThemeKind::StudioLight => "studio-light",
+            ThemeKind::Editorial => "editorial-brutal",
+        }
+    }
+
+    /// A short label for the three-way theme switch.
+    pub fn short_label(self) -> &'static str {
+        match self {
+            ThemeKind::Studio => "Studio",
+            ThemeKind::StudioLight => "Light",
+            ThemeKind::Editorial => "Brutal",
         }
     }
 
     pub fn from_id(s: &str) -> ThemeKind {
         match s.trim().to_ascii_lowercase().replace(['_', ' '], "-").as_str() {
             "studio-light" | "light" => ThemeKind::StudioLight,
+            "editorial-brutal" | "editorial" | "brutal" => ThemeKind::Editorial,
             _ => ThemeKind::Studio,
         }
     }
@@ -86,6 +100,9 @@ pub struct Tokens {
 /// The app colour: getartcraft.com's deep accent (#1659c4). White on it passes WCAG AA; on its
 /// bright accent (#2d81ff, used for hover) it doesn't.
 pub const BRAND: Color32 = Color32::from_rgb(0x16, 0x59, 0xc4);
+
+/// Editorial Brutalism's single accent: vermilion, paper-white text passes WCAG AA on it.
+pub const EDITORIAL_ACCENT: Color32 = Color32::from_rgb(0xc9, 0x34, 0x0f);
 
 pub const SEEN_IT: Color32 = Color32::from_rgb(0x3f, 0xb2, 0x7f);
 pub const WORKED_OUT: Color32 = Color32::from_rgb(0x5b, 0x8d, 0xef);
@@ -172,6 +189,38 @@ impl Tokens {
                 radius_sm: 6.0,
                 radius: 8.0,
                 radius_lg: 12.0,
+            },
+            // Editorial Brutalism: warm paper, black hairline rules, one vermilion accent,
+            // square corners, no shadow. Type stays DM Sans; data stays monospace.
+            ThemeKind::Editorial => Tokens {
+                kind,
+                chrome: Color32::from_rgb(0xe9, 0xe4, 0xd8),
+                canvas: Color32::from_rgb(0xf3, 0xf0, 0xe8),
+                card: Color32::from_rgb(0xff, 0xfd, 0xf7),
+                card_border: Color32::from_rgb(0x11, 0x11, 0x11),
+                raised: Color32::from_rgb(0xe4, 0xdf, 0xd2),
+                field: Color32::from_rgb(0xff, 0xfd, 0xf7),
+                field_border: Color32::from_rgb(0x11, 0x11, 0x11),
+                hover: Color32::from_rgb(0xdd, 0xd6, 0xc6),
+                pressed: Color32::from_rgb(0xd2, 0xca, 0xb8),
+                text: Color32::from_rgb(0x11, 0x11, 0x11),
+                text_dim: Color32::from_rgb(0x33, 0x33, 0x33),
+                text_faint: Color32::from_rgb(0x5a, 0x5a, 0x5a),
+                icon: Color32::from_rgb(0x11, 0x11, 0x11),
+                accent: EDITORIAL_ACCENT,
+                accent_hover: Color32::from_rgb(0xa8, 0x2a, 0x0e),
+                accent_ink: Color32::from_rgb(0x8f, 0x23, 0x0c),
+                accent_soft: Color32::from_rgba_unmultiplied(0xc9, 0x34, 0x0f, 40),
+                on_accent: Color32::from_rgb(0xff, 0xfd, 0xf7),
+                separator: Color32::from_rgb(0x11, 0x11, 0x11),
+                shadow: Color32::TRANSPARENT,
+                danger: Color32::from_rgb(0xa3, 0x1d, 0x14),
+                warning: Color32::from_rgb(0x8a, 0x5a, 0x00),
+                success: Color32::from_rgb(0x1f, 0x6b, 0x3a),
+                code_bg: Color32::from_rgb(0xe9, 0xe4, 0xd8),
+                radius_sm: 0.0,
+                radius: 0.0,
+                radius_lg: 0.0,
             },
         }
     }
@@ -744,7 +793,11 @@ mod tests {
             assert!(contrast(t.field_border, t.canvas) >= 3.0, "{k:?} control borders: {:.2}", contrast(t.field_border, t.canvas));
             // Main buttons are ink-filled with the canvas colour as their label.
             assert!(contrast(t.canvas, t.text) >= 4.5, "{k:?} main buttons");
-            assert_eq!(t.accent, BRAND);
+            if k == ThemeKind::Editorial {
+                assert_eq!(t.accent, EDITORIAL_ACCENT);
+            } else {
+                assert_eq!(t.accent, BRAND);
+            }
         }
     }
 
