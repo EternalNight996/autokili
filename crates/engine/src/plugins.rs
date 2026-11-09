@@ -1,4 +1,4 @@
-//! Plugins: external MCP servers whose tools become OpenKill tools, each server its own
+//! Plugins: external MCP servers whose tools become AutoKili tools, each server its own
 //! toolset. A server is listed in `config.toml`:
 //!
 //! ```toml

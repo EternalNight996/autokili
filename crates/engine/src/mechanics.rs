@@ -72,7 +72,7 @@ pub enum SheetProblem {
     TooLarge,
     /// Not JSON, or not this shape: the parser's reason.
     Unreadable(String),
-    /// Written for a newer OpenKill.
+    /// Written for a newer AutoKili.
     Newer(u32),
     /// No values.
     Empty,

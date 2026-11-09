@@ -206,7 +206,7 @@ fn text_evidence(
     let stderr = out.stderr_text();
     let mut lims = vec![Limitation::new(
         "raw_tool_output",
-        "This is the external tool's own text; its format can change between versions and is not checked by OpenKill.",
+        "This is the external tool's own text; its format can change between versions and is not checked by AutoKili.",
     )];
     if out.stdout_truncated {
         lims.push(Limitation::new(

@@ -1,5 +1,5 @@
 
-# Marvel · OpenKill UI 设计规范
+# Marvel · AutoKili UI 设计规范
 
 > 一句话：**暗场、红金、锐利。** 像电影片头，也像漫画分镜。
 

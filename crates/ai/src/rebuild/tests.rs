@@ -3113,7 +3113,7 @@ fn the_builders_conversation_travels_with_the_project() {
     let handoff = crate::cli_agents::AgentAdapter::handoff(&adapter, &kept_session(&ws).unwrap(), HANDOFF_CHARS);
     let first = resumed_elsewhere("THE BRIEF", "Last summary.", handoff.as_deref());
     assert!(first.starts_with("THE BRIEF") && first.contains("isn't on this computer"), "{first}");
-    assert!(first.contains("OpenKill asked you: Make a notes app.") && first.contains("You answered: Built it with a sidebar."), "{first}");
+    assert!(first.contains("AutoKili asked you: Make a notes app.") && first.contains("You answered: Built it with a sidebar."), "{first}");
     // Without a kept conversation, the last summary stands in for it.
     let bare = resumed_elsewhere("THE BRIEF", "Last summary.", None);
     assert!(bare.contains("Last summary.") && !bare.contains("as the project kept it"), "{bare}");

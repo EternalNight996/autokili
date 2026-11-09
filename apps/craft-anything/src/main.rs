@@ -1,4 +1,4 @@
-//! The OpenKill desktop app.
+//! The AutoKili desktop app.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -52,7 +52,7 @@ fn main() -> eframe::Result {
     log::info!("engine and AI ready; opening the window");
 
     let viewport = eframe::egui::ViewportBuilder::default()
-        .with_title("OpenKill")
+        .with_title("AutoKili")
         .with_app_id("ai.storyteller.craft-anything")
         .with_inner_size([1360.0, 860.0])
         .with_min_inner_size([760.0, 520.0])
@@ -93,7 +93,7 @@ fn main() -> eframe::Result {
     // loop isn't retried; the app only reports the failure (below) and exits.
     let run = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         eframe::run_native(
-            "OpenKill",
+            "AutoKili",
             options,
             Box::new(move |cc| {
                 log::info!("window open");
@@ -123,7 +123,7 @@ fn main() -> eframe::Result {
             let log = craft_anything_engine::settings::config_dir().join("desktop.log");
             let _ = rfd::MessageDialog::new()
                 .set_level(rfd::MessageLevel::Error)
-                .set_title("OpenKill couldn't open its window")
+                .set_title("AutoKili couldn't open its window")
                 .set_description(format!(
                     "{e}\n\n{} What happened is written to {}; please attach it if you report this.",
                     graphics_advice(&e.to_string()),
@@ -181,7 +181,7 @@ fn panic_text(payload: &(dyn std::any::Any + Send)) -> String {
 fn graphics_advice(error: &str) -> &'static str {
     if error.to_lowercase().contains("device is lost") {
         if cfg!(target_os = "macos") {
-            "The Mac's graphics stopped while the window opened. Install the latest macOS update, then try again. If it keeps happening, please report it with the log file (OpenKill issue #742 covers the Metal shader case)."
+            "The Mac's graphics stopped while the window opened. Install the latest macOS update, then try again. If it keeps happening, please report it with the log file (AutoKili issue #742 covers the Metal shader case)."
         } else {
             "The graphics driver stopped while the window opened. Update it, then try again. If it keeps happening, set the environment variable CRAFT_ANYTHING_RENDERER=software to draw without the graphics card (slower), and start the app again."
         }

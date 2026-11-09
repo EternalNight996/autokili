@@ -1,4 +1,4 @@
-//! Connect OpenKill to coding-agent apps: detect them, plan the change, merge our MCP
+//! Connect AutoKili to coding-agent apps: detect them, plan the change, merge our MCP
 //! server entry into their config without disturbing anything else (comments included), back up,
 //! verify, roll back on failure, install our skill, check health (`doctor`) and uninstall.
 //!

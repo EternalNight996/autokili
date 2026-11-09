@@ -75,7 +75,7 @@ pub struct KindWords {
     pub change_hint: &'static str,
 }
 
-/// A kind of thing OpenKill can make.
+/// A kind of thing AutoKili can make.
 pub trait TargetKind: Send + Sync {
     /// Stable id, stored with the project: `"website"`, `"app"`, `"game"`.
     fn id(&self) -> &'static str;

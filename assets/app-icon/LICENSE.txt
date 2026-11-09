@@ -1,10 +1,10 @@
-OpenKill app icon (craft-anything.svg and every file derived from it in this directory:
+AutoKili app icon (craft-anything.svg and every file derived from it in this directory:
 craft-anything-1024.png, craft-anything.icns, craft-anything.ico and hicolor/).
 
-Original artwork for OpenKill: pop-art crossed swords. It replaces the ArtCraft "raven"
+Original artwork for AutoKili: pop-art crossed swords. It replaces the ArtCraft "raven"
 icon, which the upstream assets require forks and modified versions to replace with their
 own icon.
 
-This icon is covered by OpenKill's MIT OR Apache-2.0 license.
+This icon is covered by AutoKili's MIT OR Apache-2.0 license.
 
 trace.py is an upstream tool, covered by the repository's MIT OR Apache-2.0 license.

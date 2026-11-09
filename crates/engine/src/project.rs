@@ -39,8 +39,8 @@ pub fn read_project_meta(text: &str) -> Result<ProjectMeta, ToolError> {
         Some(v) => v.as_integer().and_then(|n| u32::try_from(n).ok()).ok_or_else(|| bad(format!("format_version ({v}) isn't a whole number")))?,
     };
     if found > FORMAT_VERSION {
-        return Err(ToolError::unsupported(format!("This project was made by a newer OpenKill (format {found})."))
-            .with_remediation("Update OpenKill to open it."));
+        return Err(ToolError::unsupported(format!("This project was made by a newer AutoKili (format {found})."))
+            .with_remediation("Update AutoKili to open it."));
     }
     let reached = upgrade(&mut table, found, FIRST_FORMAT, FORMAT_STEPS).map_err(bad)?;
     table.insert("format_version".into(), toml::Value::Integer(reached.into()));

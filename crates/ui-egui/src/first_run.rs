@@ -58,7 +58,7 @@ fn welcome(app: &mut CraftApp, ui: &mut Ui) {
     let t = Tokens::get(ui.ctx());
     ui.add(crate::app_icon(132.0));
     ui.add_space(20.0);
-    ui.label(theme::display(ui, "OpenKill", theme::DISPLAY));
+    ui.label(theme::display(ui, "AutoKili", theme::DISPLAY));
     ui.add_space(6.0);
     ui.label(RichText::new(tr("Find out how any software works, then craft your own.")).size(theme::LEAD).color(t.text_dim));
     ui.add_space(36.0);

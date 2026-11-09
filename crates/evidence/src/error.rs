@@ -45,7 +45,7 @@ pub enum ErrorCode {
     ProgramFailed,
     /// The user (or project policy) declined consent for a tool that runs code or changes a device.
     ConsentRequired,
-    /// A bug in OpenKill itself. Reported, never panicked.
+    /// A bug in AutoKili itself. Reported, never panicked.
     Internal,
 }
 
