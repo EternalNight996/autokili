@@ -85,3 +85,11 @@
 - 任意页面只有一种强调色。
 - 每个页面有一个 ≥28px 的标题和一个等宽编号。
 - WCAG AA：正文对比度 ≥ 4.5:1，控件边框 ≥ 3:1（theme.rs 内已有单测）。
+
+## 8. 实拍（默认主题）
+
+| 首页 | 设置（三段开关） | 项目页 |
+| --- | --- | --- |
+| ![首页](images/editorial/home.png) | ![设置](images/editorial/settings.png) | ![项目](images/editorial/project.png) |
+
+工作台：![工作台](images/editorial/workbench.png)
