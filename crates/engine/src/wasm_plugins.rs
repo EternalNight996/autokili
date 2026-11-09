@@ -1,6 +1,6 @@
 //! WASM component plugins (R1.8 phase 2): each `[[plugins.wasm]]` entry is a component exporting
 //! `craft-anything:plugin/tools` (see `crates/engines/wit/plugin.wit`), whose tools become
-//! OpenKill tools in a toolset of their own.
+//! AutoKili tools in a toolset of their own.
 //!
 //! ```toml
 //! [[plugins.wasm]]

@@ -49,8 +49,8 @@ fn resolve<'a>(exports: impl Iterator<Item = &'a str>, base: &str) -> Result<Opt
         incompatible = Some(version.to_string());
     }
     match incompatible {
-        Some(v) => Err(ToolError::new(ErrorCode::NotSupported, format!("The plugin exports {base} for API {v}; this OpenKill speaks {API_VERSION}."))
-            .with_remediation("Rebuild the plugin against this version's plugin.wit, or use a OpenKill that matches it.")),
+        Some(v) => Err(ToolError::new(ErrorCode::NotSupported, format!("The plugin exports {base} for API {v}; this AutoKili speaks {API_VERSION}."))
+            .with_remediation("Rebuild the plugin against this version's plugin.wit, or use a AutoKili that matches it.")),
         None => Ok(None),
     }
 }

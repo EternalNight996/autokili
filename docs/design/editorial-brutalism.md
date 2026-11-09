@@ -1,5 +1,5 @@
 
-# Editorial Brutalism · OpenKill UI 设计规范
+# Editorial Brutalism · AutoKili UI 设计规范
 
 > 一句话：**用杂志的排版纪律，做软件的骨架。** 纸、墨、一条朱红，剩下全是结构。
 

@@ -1,4 +1,4 @@
-//! Plugins end to end: OpenKill's own MCP server (`craft-anything-cli mcp`) configured as a
+//! Plugins end to end: AutoKili's own MCP server (`craft-anything-cli mcp`) configured as a
 //! plugin, refreshed, listed and called through the CLI. Everything stays in temp folders.
 
 use craft_anything_platform::process::{Output, Process};

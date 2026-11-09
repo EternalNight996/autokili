@@ -1,4 +1,4 @@
-# OpenKill app icon
+# AutoKili app icon
 
 Pop-art crossed swords: cream paper `#fff3d6`, yellow starburst `#ffd84d`, loud red
 `#d42a25`, ink outlines `#111`, a 30-unit black frame and (PNG only) red halftone dots.

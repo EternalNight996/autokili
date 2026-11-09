@@ -88,7 +88,7 @@ pub fn markdown(chat: &[ChatItem], target: Option<&TargetInfo>, clean_room: bool
             evidence_md(&mut out, e);
         }
     }
-    let _ = writeln!(out, "\n---\nMade with OpenKill {}.", env!("CARGO_PKG_VERSION"));
+    let _ = writeln!(out, "\n---\nMade with AutoKili {}.", env!("CARGO_PKG_VERSION"));
     out
 }
 

@@ -71,8 +71,8 @@ impl BuildProgress {
             }
         };
         if found > BUILD_PROGRESS_VERSION {
-            return Err(ToolError::unsupported(format!("{BUILD_PROGRESS_FILE} was written by a newer OpenKill, so this build is left alone."))
-                .with_remediation("Update OpenKill to continue this build."));
+            return Err(ToolError::unsupported(format!("{BUILD_PROGRESS_FILE} was written by a newer AutoKili, so this build is left alone."))
+                .with_remediation("Update AutoKili to continue this build."));
         }
         let version = crate::versioned::upgrade(&mut doc, found, 0, STEPS)
             .map_err(|e| ToolError::invalid(format!("Couldn't bring {BUILD_PROGRESS_FILE} up to date: {e}")))?;

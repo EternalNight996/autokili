@@ -44,7 +44,7 @@ impl TargetContext {
             let target = Target::load(&self.path)?;
             if target.sha256 != self.sha256 {
                 return Err(ToolError::invalid("The shared target changed after it was opened.")
-                    .with_remediation("Reopen the target in OpenKill, then start a new conversation."));
+                    .with_remediation("Reopen the target in AutoKili, then start a new conversation."));
             }
             target
         };

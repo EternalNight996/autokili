@@ -70,7 +70,7 @@ impl Found {
     }
 }
 
-/// An engine OpenKill can build a game with.
+/// An engine AutoKili can build a game with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Builder {
@@ -553,7 +553,7 @@ pub struct Places {
     /// Explicit Visual Studio or VC toolset directories (`VSINSTALLDIR`, `VCINSTALLDIR`, `VCToolsInstallDir`).
     pub vs_roots: Vec<PathBuf>,
     pub applications: Option<PathBuf>,
-    /// OpenKill's own engine store (where it puts Godot).
+    /// AutoKili's own engine store (where it puts Godot).
     pub store: PathBuf,
     /// Look on PATH too (off in tests).
     pub use_path: bool,
@@ -790,7 +790,7 @@ fn has_msvc_compiler(toolset: &Path) -> bool {
 
 // ---- getting one ---------------------------------------------------------------------------------
 
-/// The Godot release OpenKill downloads.
+/// The Godot release AutoKili downloads.
 pub const GODOT_VERSION: &str = "4.4.1-stable";
 /// Largest file unpacked from Godot's download: the macOS app's universal program is over the
 /// 256 MB other engines' files are held to (#100). The download is checked against Godot's own

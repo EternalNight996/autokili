@@ -1,5 +1,5 @@
 
-# Pop Art · OpenKill UI 设计规范
+# Pop Art · AutoKili UI 设计规范
 
 > 一句话：**平涂的色块、粗黑的描边、硬邦邦的投影、一条红。** 像印在纸上的漫画。
 

@@ -72,9 +72,9 @@ pub fn doctor(host: &Host, req: &DoctorRequest) -> DoctorReport {
     let cli = req.cli_path.clone().or_else(craft_anything_platform::self_cli_path);
     match &cli {
         Some(p) if p.is_file() => checks.push(Check::new("binary", CheckStatus::Ok, format!("craft-anything-cli is at {}", p.display()))),
-        Some(p) => checks.push(Check::new("binary", CheckStatus::Fail, format!("{} does not exist.", p.display())).fix("Reinstall OpenKill.")),
+        Some(p) => checks.push(Check::new("binary", CheckStatus::Fail, format!("{} does not exist.", p.display())).fix("Reinstall AutoKili.")),
         None => checks.push(
-            Check::new("binary", CheckStatus::Fail, "craft-anything-cli was not found.").fix("Install OpenKill; the CLI ships next to the desktop app."),
+            Check::new("binary", CheckStatus::Fail, "craft-anything-cli was not found.").fix("Install AutoKili; the CLI ships next to the desktop app."),
         ),
     }
     let on_path = craft_anything_platform::which_all("craft-anything-cli");
@@ -128,9 +128,9 @@ pub fn doctor(host: &Host, req: &DoctorRequest) -> DoctorReport {
                 let desired = cli.as_ref().map(|p| c.desired_entry(&[p.display().to_string(), "mcp".into()]));
                 let program_ok = entry_command(&e).and_then(|v| v.into_iter().next()).is_some_and(|p| Path::new(&p).is_file());
                 if config::is_disabled(c, &text) {
-                    Check::new(name, CheckStatus::Warn, format!("{} lists OpenKill as disabled.", c.display)).fix(setup_cmd)
+                    Check::new(name, CheckStatus::Warn, format!("{} lists AutoKili as disabled.", c.display)).fix(setup_cmd)
                 } else if config::entry_turned_off(c, &text) {
-                    Check::new(name, CheckStatus::Warn, format!("{} has OpenKill turned off (enabled = false).", c.display))
+                    Check::new(name, CheckStatus::Warn, format!("{} has AutoKili turned off (enabled = false).", c.display))
                         .fix(format!("Set enabled = true (or remove it) under [mcp_servers.craft-anything] in {}.", c.config.display()))
                 } else if !program_ok {
                     Check::new(name, CheckStatus::Fail, format!("{} points to a craft-anything-cli that no longer exists.", c.display)).fix(setup_cmd)
@@ -148,9 +148,9 @@ pub fn doctor(host: &Host, req: &DoctorRequest) -> DoctorReport {
     for d in &skill_dirs {
         let name = format!("skill:{}", d.display());
         checks.push(match skill::inspect(d) {
-            SkillState::Current => Check::new(name, CheckStatus::Ok, "The OpenKill skill is installed and current."),
-            SkillState::Outdated => Check::new(name, CheckStatus::Warn, "The OpenKill skill is out of date.").fix("craft-anything-cli setup --yes"),
-            SkillState::Missing => Check::new(name, CheckStatus::Info, "The OpenKill skill isn't installed here.").fix("craft-anything-cli setup --yes"),
+            SkillState::Current => Check::new(name, CheckStatus::Ok, "The AutoKili skill is installed and current."),
+            SkillState::Outdated => Check::new(name, CheckStatus::Warn, "The AutoKili skill is out of date.").fix("craft-anything-cli setup --yes"),
+            SkillState::Missing => Check::new(name, CheckStatus::Info, "The AutoKili skill isn't installed here.").fix("craft-anything-cli setup --yes"),
             SkillState::Foreign => Check::new(name, CheckStatus::Warn, "Another skill uses the craft-anything folder name."),
         });
     }

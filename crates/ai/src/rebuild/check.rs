@@ -43,7 +43,7 @@ pub(super) fn own_build_check(app: &Path, place: &str, stack: &str, editor: Opti
     match stacks::toolchain_in(app).filter(|_| engine.is_none()) {
         Some(tool) => own_build(app, tool, stop),
         None if engine.is_some() || static_site(app) => build_check(app, place, stack, editor, stop),
-        None => (true, "Nothing was built: OpenKill doesn't know how to build this kind of project.".into()),
+        None => (true, "Nothing was built: AutoKili doesn't know how to build this kind of project.".into()),
     }
 }
 
@@ -73,7 +73,7 @@ fn own_build(app: &Path, tool: &stacks::Toolchain, stop: &CancelToken) -> (bool,
 /// A person's own project: run its tests. Output that says none ran isn't a failure, and neither
 /// is a project we know no way to test, and the note says so.
 pub(super) fn own_tests_check(app: &Path, tool: Option<&stacks::Toolchain>, stop: &CancelToken) -> (bool, String) {
-    let Some(tool) = tool else { return (true, "No tests ran: OpenKill doesn't know how to test this kind of project.".into()) };
+    let Some(tool) = tool else { return (true, "No tests ran: AutoKili doesn't know how to test this kind of project.".into()) };
     let says_none = |text: &str| tool.no_tests.iter().find(|n| text.contains(n.as_str())).cloned();
     if let Some(name) = &tool.test_script {
         // shortcut: `workspaces=true` in .npmrc can give a root with no script tests; they aren't

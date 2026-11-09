@@ -1,9 +1,9 @@
 
-# ⚒️ OpenKill — 证据驱动的复刻引擎
+# ⚒️ AutoKili — 证据驱动的复刻引擎
 
 <p align="center"><sub>Evidence in, artifact out · 纯 Rust · 本地优先 · 开源</sub></p>
 
-**OpenKill** 是一个面向「复刻」的工程内核：给它一个目标（网站 / 桌面应用 / 游戏 / 二进制），它先**证明**目标是什么，再把它**造出来**，最后用**证据**验收。
+**AutoKili** 是一个面向「复刻」的工程内核：给它一个目标（网站 / 桌面应用 / 游戏 / 二进制），它先**证明**目标是什么，再把它**造出来**，最后用**证据**验收。
 
 > 本项目是 [Craft Anything](https://github.com/storytold/craft-anything) 的**二创分支**，保留上游全部版权、许可证与致谢。详见 [前身与致谢](#前身与致谢)。
 
@@ -16,7 +16,7 @@
 ## 它解决什么
 
 现有工具只做一半：分析工具（REA、Ghidra、IDA）能看懂，但不会写；生成工具能写，但只会"看起来像"。
-**OpenKill 补的是中间那一步——把"看懂"翻译成可执行的验收标准。**
+**AutoKili 补的是中间那一步——把"看懂"翻译成可执行的验收标准。**
 
 ```text
 证据 ──▶ 义务 ──▶ 重建 ──▶ 证明
@@ -41,8 +41,8 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/EternalNight996/openkill
-cd openkill
+git clone https://github.com/EternalNight996/autokili
+cd autokili
 cargo run --release -p craft-anything      # 桌面应用（重命名进行中）
 cargo install --path apps/craft-anything-cli
 craft-anything-cli doctor
@@ -82,12 +82,12 @@ flowchart LR
 | 上游仓库 | https://github.com/storytold/craft-anything |
 | 上游作者 | https://github.com/storytold |
 | 上游许可证 | MIT OR Apache-2.0 |
-| 本分支 | https://github.com/EternalNight996/openkill |
+| 本分支 | https://github.com/EternalNight996/autokili |
 
 二开声明：
 
 - 本项目 fork 自 Craft Anything，**上游版权与许可证原文完整保留**（见 LICENSE-MIT、LICENSE-APACHE、NOTICE、ATTRIBUTION.md）。
-- 上游的第三方声明与 vendored 组件（如 wgpu-hal 的 CRAFT_ANYTHING.md）保持原样，不改标为 OpenKill 原创。
+- 上游的第三方声明与 vendored 组件（如 wgpu-hal 的 CRAFT_ANYTHING.md）保持原样，不改标为 AutoKili 原创。
 - 本分支的修改集中在品牌、README、后续新增模块；核心引擎的修改会在提交信息中标注来源与理由。
 
 后续计划接入并同样保留署名的上游：

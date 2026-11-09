@@ -13,9 +13,9 @@ fn main() {
     }
     let mut res = winresource::WindowsResource::new();
     res.set_icon("../../assets/app-icon/craft-anything.ico")
-        .set("ProductName", "OpenKill")
-        .set("FileDescription", "OpenKill: find out how any software works")
-        .set("LegalCopyright", "Copyright (c) the ArtCraft Team and the OpenKill contributors. MIT OR Apache-2.0.")
+        .set("ProductName", "AutoKili")
+        .set("FileDescription", "AutoKili: find out how any software works")
+        .set("LegalCopyright", "Copyright (c) the ArtCraft Team and the AutoKili contributors. MIT OR Apache-2.0.")
         .set("OriginalFilename", "craft-anything.exe")
         .set("InternalName", "craft-anything");
     if let Err(e) = res.compile() {

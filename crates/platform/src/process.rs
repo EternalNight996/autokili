@@ -1,4 +1,4 @@
-//! Owned processes: the only way OpenKill runs another program.
+//! Owned processes: the only way AutoKili runs another program.
 //!
 //! ```no_run
 //! use craft_anything_platform::process::Process;
@@ -438,7 +438,7 @@ fn spawn_error_for(name: &str, program: &OsStr, e: std::io::Error, remediation: 
 fn interpreter_missing_error(name: &str, program: &OsStr, interpreter: &str, e: &std::io::Error) -> ToolError {
     ToolError::new(ErrorCode::EngineMissing, format!("{name} was installed with npm and needs `{interpreter}` (Node.js) to run, but `{interpreter}` wasn't found."))
         .with_remediation(format!(
-            "Install Node.js, or if you use nvm for Windows, run `nvm use <version>` in a terminal opened as administrator. Then restart OpenKill. Installing {name} without npm also works, when it offers that."
+            "Install Node.js, or if you use nvm for Windows, run `nvm use <version>` in a terminal opened as administrator. Then restart AutoKili. Installing {name} without npm also works, when it offers that."
         ))
         .with_details(serde_json::json!({"program": program.to_string_lossy(), "reason": "interpreter_missing", "interpreter": interpreter, "error": e.to_string()}))
 }
@@ -1321,9 +1321,9 @@ mod launch_tests {
 
     #[test]
     fn paths_for_explorer_use_backslashes_and_no_verbatim_prefix() {
-        // Project folders are kept as `D:/Projects/OpenKill\name`; Explorer opened
+        // Project folders are kept as `D:/Projects/AutoKili\name`; Explorer opened
         // Documents for those instead of the folder.
-        assert_eq!(windows_form(r"D:/Projects/OpenKill\notepad"), r"D:\Projects\OpenKill\notepad");
+        assert_eq!(windows_form(r"D:/Projects/AutoKili\notepad"), r"D:\Projects\AutoKili\notepad");
         assert_eq!(windows_form(r"\\?\D:\Projects\x"), r"D:\Projects\x");
         assert_eq!(windows_form(r"\\?\UNC\server\share\x"), r"\\server\share\x");
         assert_eq!(windows_form(r"\\server/share"), r"\\server\share");
