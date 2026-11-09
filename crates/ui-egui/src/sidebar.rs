@@ -82,6 +82,9 @@ pub fn show(app: &mut CraftApp, ui: &mut Ui) {
         ui.add_space(4.0);
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
             if app.projects.is_empty() && !fold {
+                ui.separator();
+                ui.label(RichText::new("00 / PROJECTS").font(theme::mono(10.5)).color(t.text_faint));
+                ui.add_space(6.0);
                 egui::Frame::new().inner_margin(egui::Margin { left: 12, right: 8, top: 2, bottom: 2 }).show(ui, |ui| {
                     ui.label(RichText::new(tr("Nothing made yet. What you make shows up here.")).color(t.text_faint).size(theme::SMALL));
                 });
