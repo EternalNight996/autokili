@@ -122,7 +122,7 @@ pub fn specs() -> Vec<ToolSpec> {
         ToolSpec {
             id: "project_delete",
             title: "Delete a project",
-            summary: "Delete a project: everything Craft Anything made in its folder (its records, checks, and what was built in app/). The person's own files stay (an app edited in place, the files a project started from). Can't be undone, so `confirm` must be true; stop a build first.",
+            summary: "Delete a project: everything OpenKill made in its folder (its records, checks, and what was built in app/). The person's own files stay (an app edited in place, the files a project started from). Can't be undone, so `confirm` must be true; stop a build first.",
             beginner: "Deletes something you made. Your own files are kept.",
             toolset: Toolset::Projects,
             effects: Effects::WRITES_FILESYSTEM,

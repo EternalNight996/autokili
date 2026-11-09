@@ -1,4 +1,4 @@
-//! The Craft Anything desktop app.
+//! The OpenKill desktop app.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -181,7 +181,7 @@ fn panic_text(payload: &(dyn std::any::Any + Send)) -> String {
 fn graphics_advice(error: &str) -> &'static str {
     if error.to_lowercase().contains("device is lost") {
         if cfg!(target_os = "macos") {
-            "The Mac's graphics stopped while the window opened. Install the latest macOS update, then try again. If it keeps happening, please report it with the log file (Craft Anything issue #742 covers the Metal shader case)."
+            "The Mac's graphics stopped while the window opened. Install the latest macOS update, then try again. If it keeps happening, please report it with the log file (OpenKill issue #742 covers the Metal shader case)."
         } else {
             "The graphics driver stopped while the window opened. Update it, then try again. If it keeps happening, set the environment variable CRAFT_ANYTHING_RENDERER=software to draw without the graphics card (slower), and start the app again."
         }

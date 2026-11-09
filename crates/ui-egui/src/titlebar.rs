@@ -206,7 +206,7 @@ fn usage_pill(app: &CraftApp, ui: &mut Ui) {
     r.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Label, true, &text));
     r.on_hover_ui(|ui| {
         ui.label(RichText::new(tr("AI use this session")).font(theme::semibold(theme::SMALL)));
-        ui.label(crate::usage::explain(u, "Since Craft Anything opened."));
+        ui.label(crate::usage::explain(u, "Since OpenKill opened."));
     });
 }
 
