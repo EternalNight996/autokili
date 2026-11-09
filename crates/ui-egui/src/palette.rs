@@ -231,7 +231,9 @@ pub(crate) fn run_app_command(app: &mut CraftApp, c: AppCommand) {
             app.set_deep(on);
         }
         AppCommand::ToggleTheme => {
-            let next = if app.theme_kind() == theme::ThemeKind::Studio { theme::ThemeKind::StudioLight } else { theme::ThemeKind::Studio };
+            let cur = app.theme_kind();
+            let idx = theme::ThemeKind::ALL.iter().position(|k| *k == cur).unwrap_or(0);
+            let next = theme::ThemeKind::ALL[(idx + 1) % theme::ThemeKind::ALL.len()];
             app.settings.theme = next.id().into();
             app.settings_changed();
         }

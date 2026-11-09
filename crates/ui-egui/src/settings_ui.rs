@@ -177,8 +177,9 @@ fn general(app: &mut CraftApp, ui: &mut Ui) {
         });
     });
     row(ui, "Theme", "", |ui| {
-        let sel = usize::from(app.theme_kind() == ThemeKind::StudioLight);
-        if let Some(i) = widgets::segmented(ui, &["Studio", "Studio Light"], sel, 30.0) {
+        let sel = ThemeKind::ALL.iter().position(|k| *k == app.theme_kind()).unwrap_or(0);
+        let labels: Vec<&str> = ThemeKind::ALL.iter().map(|k| k.short_label()).collect();
+        if let Some(i) = widgets::segmented(ui, &labels, sel, 30.0) {
             app.settings.theme = ThemeKind::ALL.get(i).copied().unwrap_or_default().id().into();
             app.settings_changed();
         }

@@ -52,7 +52,7 @@ fn main() -> eframe::Result {
     log::info!("engine and AI ready; opening the window");
 
     let viewport = eframe::egui::ViewportBuilder::default()
-        .with_title("Craft Anything")
+        .with_title("OpenKill")
         .with_app_id("ai.storyteller.craft-anything")
         .with_inner_size([1360.0, 860.0])
         .with_min_inner_size([760.0, 520.0])
@@ -93,7 +93,7 @@ fn main() -> eframe::Result {
     // loop isn't retried; the app only reports the failure (below) and exits.
     let run = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         eframe::run_native(
-            "Craft Anything",
+            "OpenKill",
             options,
             Box::new(move |cc| {
                 log::info!("window open");
@@ -123,7 +123,7 @@ fn main() -> eframe::Result {
             let log = craft_anything_engine::settings::config_dir().join("desktop.log");
             let _ = rfd::MessageDialog::new()
                 .set_level(rfd::MessageLevel::Error)
-                .set_title("Craft Anything couldn't open its window")
+                .set_title("OpenKill couldn't open its window")
                 .set_description(format!(
                     "{e}\n\n{} What happened is written to {}; please attach it if you report this.",
                     graphics_advice(&e.to_string()),

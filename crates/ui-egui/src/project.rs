@@ -934,7 +934,7 @@ fn side(app: &mut CraftApp, ui: &mut Ui, ws: &Workspace) {
             ui.painter().rect_filled(rect, t.radius, t.accent_soft);
             icons::paint(ui, rect, make::project_icon(m), 24.0, t.accent_ink);
             ui.vertical(|ui| {
-                ui.add(egui::Label::new(theme::heading(&m.name, theme::CARD)).truncate());
+                ui.add(egui::Label::new(theme::heading(&m.name, theme::TITLE)).truncate());
                 let (label, fg, bg) = make::status_shown(app, ws, &t);
                 widgets::pill(ui, label, fg, bg);
             });
