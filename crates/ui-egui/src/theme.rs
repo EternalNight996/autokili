@@ -18,16 +18,19 @@ pub enum ThemeKind {
     StudioLight,
     /// Editorial Brutalism: warm paper, ink rules, one vermilion accent, zero radii.
     Editorial,
+    /// Pop art: primary yellow, black outlines, one loud red, thick strokes, hard shadow.
+    Pop,
 }
 
 impl ThemeKind {
-    pub const ALL: [ThemeKind; 3] = [ThemeKind::Studio, ThemeKind::StudioLight, ThemeKind::Editorial];
+    pub const ALL: [ThemeKind; 4] = [ThemeKind::Studio, ThemeKind::StudioLight, ThemeKind::Editorial, ThemeKind::Pop];
 
     pub fn label(self) -> &'static str {
         match self {
             ThemeKind::Studio => "Studio (dark)",
             ThemeKind::StudioLight => "Studio Light",
             ThemeKind::Editorial => "Editorial Brutal",
+            ThemeKind::Pop => "Pop Art",
         }
     }
 
@@ -37,6 +40,7 @@ impl ThemeKind {
             ThemeKind::Studio => "studio",
             ThemeKind::StudioLight => "studio-light",
             ThemeKind::Editorial => "editorial-brutal",
+            ThemeKind::Pop => "pop",
         }
     }
 
@@ -46,6 +50,7 @@ impl ThemeKind {
             ThemeKind::Studio => "Studio",
             ThemeKind::StudioLight => "Light",
             ThemeKind::Editorial => "Brutal",
+            ThemeKind::Pop => "Pop",
         }
     }
 
@@ -53,6 +58,7 @@ impl ThemeKind {
         match s.trim().to_ascii_lowercase().replace(['_', ' '], "-").as_str() {
             "studio-light" | "light" => ThemeKind::StudioLight,
             "editorial-brutal" | "editorial" | "brutal" => ThemeKind::Editorial,
+            "pop" | "pop-art" | "popart" => ThemeKind::Pop,
             _ => ThemeKind::Studio,
         }
     }
@@ -95,6 +101,10 @@ pub struct Tokens {
     pub radius_sm: f32,
     pub radius: f32,
     pub radius_lg: f32,
+    /// Stroke width for hairlines, control borders and window strokes.
+    pub border: f32,
+    /// Pop art uses a hard offset shadow instead of a soft one.
+    pub hard_shadow: bool,
 }
 
 /// The app colour: getartcraft.com's deep accent (#1659c4). White on it passes WCAG AA; on its
@@ -103,6 +113,9 @@ pub const BRAND: Color32 = Color32::from_rgb(0x16, 0x59, 0xc4);
 
 /// Editorial Brutalism's single accent: vermilion, paper-white text passes WCAG AA on it.
 pub const EDITORIAL_ACCENT: Color32 = Color32::from_rgb(0xc9, 0x34, 0x0f);
+
+/// Pop art's single accent: loud red, paper-white text passes WCAG AA on it.
+pub const POP_ACCENT: Color32 = Color32::from_rgb(0xd4, 0x2a, 0x25);
 
 pub const SEEN_IT: Color32 = Color32::from_rgb(0x3f, 0xb2, 0x7f);
 pub const WORKED_OUT: Color32 = Color32::from_rgb(0x5b, 0x8d, 0xef);
@@ -157,6 +170,8 @@ impl Tokens {
                 radius_sm: 6.0,
                 radius: 8.0,
                 radius_lg: 12.0,
+                border: 1.0,
+                hard_shadow: false,
             },
             // getartcraft.com's light: warm paper (#f2f1ee), its sunken #e9e8e4 for the sidebar,
             // raised #faf9f7 for cards, ink #101014.
@@ -189,6 +204,8 @@ impl Tokens {
                 radius_sm: 6.0,
                 radius: 8.0,
                 radius_lg: 12.0,
+                border: 1.0,
+                hard_shadow: false,
             },
             // Editorial Brutalism: warm paper, black hairline rules, one vermilion accent,
             // square corners, no shadow. Type stays DM Sans; data stays monospace.
@@ -221,6 +238,42 @@ impl Tokens {
                 radius_sm: 0.0,
                 radius: 0.0,
                 radius_lg: 0.0,
+                border: 1.0,
+                hard_shadow: false,
+            },
+            // Pop art: cream paper, primary yellow chrome, black outlines, one loud red,
+            // thick strokes and a hard offset shadow.
+            ThemeKind::Pop => Tokens {
+                kind,
+                chrome: Color32::from_rgb(0xff, 0xd8, 0x4d),
+                canvas: Color32::from_rgb(0xff, 0xf3, 0xd6),
+                card: Color32::from_rgb(0xff, 0xff, 0xff),
+                card_border: Color32::from_rgb(0x11, 0x11, 0x11),
+                raised: Color32::from_rgb(0xff, 0xe9, 0xa8),
+                field: Color32::from_rgb(0xff, 0xff, 0xff),
+                field_border: Color32::from_rgb(0x11, 0x11, 0x11),
+                hover: Color32::from_rgb(0xff, 0xe9, 0xa8),
+                pressed: Color32::from_rgb(0xff, 0xd8, 0x4d),
+                text: Color32::from_rgb(0x11, 0x11, 0x11),
+                text_dim: Color32::from_rgb(0x33, 0x33, 0x33),
+                text_faint: Color32::from_rgb(0x5a, 0x5a, 0x5a),
+                icon: Color32::from_rgb(0x11, 0x11, 0x11),
+                accent: POP_ACCENT,
+                accent_hover: Color32::from_rgb(0xb3, 0x22, 0x1d),
+                accent_ink: Color32::from_rgb(0x9e, 0x1d, 0x19),
+                accent_soft: Color32::from_rgba_unmultiplied(0xd4, 0x2a, 0x25, 40),
+                on_accent: Color32::from_rgb(0xff, 0xfd, 0xf7),
+                separator: Color32::from_rgb(0x11, 0x11, 0x11),
+                shadow: Color32::from_black_alpha(255),
+                danger: Color32::from_rgb(0xc2, 0x1b, 0x12),
+                warning: Color32::from_rgb(0xa6, 0x6a, 0x00),
+                success: Color32::from_rgb(0x17, 0x6b, 0x42),
+                code_bg: Color32::from_rgb(0xff, 0xe9, 0xa8),
+                radius_sm: 0.0,
+                radius: 0.0,
+                radius_lg: 0.0,
+                border: 2.5,
+                hard_shadow: true,
             },
         }
     }
@@ -349,6 +402,7 @@ pub fn semibold(size: f32) -> FontId {
 /// The type scale: every text size in the interface is one of these.
 /// Headings (`heading`, DM Sans bold), largest first: a screen's title, a step or a dialog's
 /// title, a card's or a list item's title.
+pub const DISPLAY: f32 = 36.0;
 pub const TITLE: f32 = 26.0;
 pub const SECTION: f32 = 18.0;
 pub const CARD: f32 = 16.0;
@@ -418,7 +472,7 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind, roomy: bool) {
     let mut v = if t.dark() { Visuals::dark() } else { Visuals::light() };
     v.panel_fill = t.chrome;
     v.window_fill = t.card;
-    v.window_stroke = Stroke::new(1.0, t.card_border);
+    v.window_stroke = Stroke::new(t.border, t.card_border);
     v.extreme_bg_color = t.field;
     v.faint_bg_color = t.raised;
     v.code_bg_color = t.code_bg;
@@ -428,11 +482,12 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind, roomy: bool) {
     v.error_fg_color = t.danger;
     v.window_corner_radius = t.r_lg();
     v.menu_corner_radius = t.r();
-    v.window_shadow = egui::Shadow { offset: [0, 10], blur: 28, spread: 0, color: t.shadow };
-    v.popup_shadow = egui::Shadow { offset: [0, 4], blur: 14, spread: 0, color: t.shadow };
+    let (shadow_offset, shadow_blur): ([i8; 2], u8) = if t.hard_shadow { ([3, 3], 0) } else { ([0, 10], 28) };
+    v.window_shadow = egui::Shadow { offset: shadow_offset, blur: shadow_blur, spread: 0, color: t.shadow };
+    v.popup_shadow = egui::Shadow { offset: [shadow_offset[0], 4], blur: if t.hard_shadow { 0 } else { 14 }, spread: 0, color: t.shadow };
     v.text_edit_bg_color = Some(t.field);
     v.selection.bg_fill = t.accent_soft;
-    v.selection.stroke = Stroke::new(1.0, t.accent);
+    v.selection.stroke = Stroke::new(t.border, t.accent);
     v.handle_shape = egui::style::HandleShape::Circle;
     v.striped = false;
     v.indent_has_left_vline = false;
@@ -440,8 +495,8 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind, roomy: bool) {
     let w = &mut v.widgets;
     w.noninteractive.bg_fill = t.card;
     w.noninteractive.weak_bg_fill = t.card;
-    w.noninteractive.bg_stroke = Stroke::new(1.0, t.separator);
-    w.noninteractive.fg_stroke = Stroke::new(1.0, t.text_dim);
+    w.noninteractive.bg_stroke = Stroke::new(t.border, t.separator);
+    w.noninteractive.fg_stroke = Stroke::new(t.border, t.text_dim);
     w.noninteractive.corner_radius = r;
     // Buttons and combo boxes are hairline boxes on the surface (weak fill transparent at rest).
     for (wv, bg, weak, stroke) in [
@@ -452,8 +507,8 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind, roomy: bool) {
     ] {
         wv.bg_fill = bg;
         wv.weak_bg_fill = weak;
-        wv.bg_stroke = Stroke::new(1.0, stroke);
-        wv.fg_stroke = Stroke::new(1.0, t.text);
+        wv.bg_stroke = Stroke::new(t.border, stroke);
+        wv.fg_stroke = Stroke::new(t.border, t.text);
         wv.corner_radius = r;
         wv.expansion = 0.0;
     }
@@ -793,10 +848,10 @@ mod tests {
             assert!(contrast(t.field_border, t.canvas) >= 3.0, "{k:?} control borders: {:.2}", contrast(t.field_border, t.canvas));
             // Main buttons are ink-filled with the canvas colour as their label.
             assert!(contrast(t.canvas, t.text) >= 4.5, "{k:?} main buttons");
-            if k == ThemeKind::Editorial {
-                assert_eq!(t.accent, EDITORIAL_ACCENT);
-            } else {
-                assert_eq!(t.accent, BRAND);
+            match k {
+                ThemeKind::Editorial => assert_eq!(t.accent, EDITORIAL_ACCENT),
+                ThemeKind::Pop => assert_eq!(t.accent, POP_ACCENT),
+                _ => assert_eq!(t.accent, BRAND),
             }
         }
     }
