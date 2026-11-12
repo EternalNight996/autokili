@@ -1,3 +1,5 @@
+> 本文件是上游项目的旧版译文，内容可能滞后；以 [README.md](README.md) 为准。
+
 <p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.autokill.app.png" width="128" height="128" alt="AutoKill のアイコン: 青いタイルに刻まれたワタリガラス">
 </p>

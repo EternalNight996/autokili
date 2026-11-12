@@ -1,3 +1,5 @@
+> 本文件是上游项目的旧版译文，内容可能滞后；以 [README.md](README.md) 为准。
+
 <!-- Tradução do README.md para português brasileiro. Mantenha este arquivo alinhado à versão em inglês. -->
 
 <p align="center">

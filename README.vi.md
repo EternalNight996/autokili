@@ -1,3 +1,5 @@
+> 本文件是上游项目的旧版译文，内容可能滞后；以 [README.md](README.md) 为准。
+
 <!-- Tệp này là bản dịch tiếng Việt của README.md; khi bản tiếng Anh thay đổi, hãy cập nhật cả tệp này. -->
 
 <p align="center">

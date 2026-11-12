@@ -1,3 +1,5 @@
+> 本文件是上游项目的旧版译文，内容可能滞后；以 [README.md](README.md) 为准。
+
 <p align="center">
   <img src="assets/app-icon/hicolor/256x256/apps/ai.autokill.app.png" width="128" height="128" alt="AutoKill 아이콘: 파란 타일 위에 새겨진 까마귀">
 </p>
