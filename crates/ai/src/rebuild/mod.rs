@@ -777,7 +777,10 @@ impl Worker {
             deep,
             targets,
             logs: Some(crate::failure_log::dir_in(&config_dir)),
-            key: crate::cli_agents::acp::key_for(&self.keys, &entry.config.model, &entry.config.name, entry.config.kind),
+            key: crate::cli_agents::acp::key_for(&self.keys, &entry.config.model, &entry.config.name, entry.config.kind).or_else(|| {
+                // The harness takes an API key instead of its own sign-in (DEEPSEEK_API_KEY).
+                crate::cli_agents::accepts_key(&entry.config.model).then(|| self.keys.resolve(&entry.config.name, entry.config.kind)).flatten()
+            }),
             cost_totals: Some(crate::cli_agents::claude_cost::path_in(&config_dir)),
             resume: ws.manifest.agent_session_for_mode(&entry.config.model, deep).map(str::to_string),
             preamble: Some(

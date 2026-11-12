@@ -885,14 +885,15 @@ impl AiHub {
         self.config()
             .backends
             .iter()
-            .filter(|b| b.config.kind != BackendKind::AgentCli)
+            .filter(|b| b.config.kind != BackendKind::AgentCli || cli_agents::accepts_key(&b.config.model))
             .map(|b| (b.config.name.clone(), self.keys.get(&b.config.name).is_some()))
             .collect()
     }
 
     /// Whether an API backend has a key saved in the app (not the environment); never the key.
     pub fn saved_backend_key(&self, name: &str) -> Result<bool, ToolError> {
-        if self.entry(name)?.config.kind == BackendKind::AgentCli {
+        let entry = self.entry(name)?;
+        if entry.config.kind == BackendKind::AgentCli && !cli_agents::accepts_key(&entry.config.model) {
             return Err(ToolError::invalid("A coding agent keeps its own sign-in; there is no saved key to report here."));
         }
         Ok(self.keys.get(name).is_some())
@@ -903,7 +904,8 @@ impl AiHub {
     pub fn set_backend_key(&self, name: &str, key: &str) -> Result<(), ToolError> {
         let edit = self.backend_edits.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
         edit.label("Backend key or removal");
-        if self.entry(name)?.config.kind == BackendKind::AgentCli {
+        let entry = self.entry(name)?;
+        if entry.config.kind == BackendKind::AgentCli && !cli_agents::accepts_key(&entry.config.model) {
             return Err(ToolError::invalid("A coding agent keeps its own sign-in; there is no key to save for it here."));
         }
         let key = key.trim();
@@ -911,6 +913,13 @@ impl AiHub {
             return Err(ToolError::invalid("The key is empty."));
         }
         self.keys.set(name, key)?;
+        // The harness reads its own store first, so the key is written there too: a build then works
+        // even when nothing exports DEEPSEEK_API_KEY into the process.
+        if cli_agents::accepts_key(&entry.config.model) {
+            if let Err(e) = crate::auth::deepseek::store_api_key(key) {
+                return Err(e);
+            }
+        }
         // A keychain that refused the write can leave the fallback file holding the new key while
         // the keychain still wins with the old one. Reading back makes that a loud failure; trying
         // again after unlocking the keychain is safe.
@@ -926,7 +935,8 @@ impl AiHub {
     pub fn remove_backend_key(&self, name: &str) -> Result<(), ToolError> {
         let edit = self.backend_edits.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
         edit.label("Backend key or removal");
-        if self.entry(name)?.config.kind == BackendKind::AgentCli {
+        let entry = self.entry(name)?;
+        if entry.config.kind == BackendKind::AgentCli && !cli_agents::accepts_key(&entry.config.model) {
             return Err(ToolError::invalid("A coding agent keeps its own sign-in; there is no saved key to forget here."));
         }
         self.keys.delete(name)

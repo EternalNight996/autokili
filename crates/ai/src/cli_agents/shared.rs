@@ -143,7 +143,10 @@ fn prepare(engine: &Engine, keys: &crate::KeyStore, entry: &BackendEntry, beginn
     spec.targets = targets;
     spec.deep = !session.clean_room();
     spec.logs = Some(crate::failure_log::dir_in(&session.config_dir()));
-    spec.key = acp::key_for(keys, &spec.config.model, &spec.config.name, spec.config.kind);
+    spec.key = acp::key_for(keys, &spec.config.model, &spec.config.name, spec.config.kind).or_else(|| {
+        // The harness takes an API key (DEEPSEEK_API_KEY) instead of a sign-in of its own.
+        accepts_key(&spec.config.model).then(|| keys.resolve(&spec.config.name, spec.config.kind)).flatten()
+    });
     spec.cost_totals = Some(crate::cli_agents::claude_cost::path_in(&session.config_dir()));
     Ok(spec)
 }

@@ -93,7 +93,9 @@ pub fn ask(
             deep,
             logs: logs.clone(),
             resume,
-            key: crate::cli_agents::acp::key_for(&hub.keys, &entry.config.model, &entry.config.name, entry.config.kind),
+            key: crate::cli_agents::acp::key_for(&hub.keys, &entry.config.model, &entry.config.name, entry.config.kind).or_else(|| {
+                crate::cli_agents::accepts_key(&entry.config.model).then(|| hub.keys.resolve(&entry.config.name, entry.config.kind)).flatten()
+            }),
             preamble: Some(PREAMBLE.into()),
             ..CliSpec::new(entry.config.clone(), entry.options.clone(), false, Some(ws.root.clone()))
         };

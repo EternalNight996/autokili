@@ -382,20 +382,52 @@ pub fn store_api_key(key: &str) -> Result<(), ToolError> {
 }
 
 fn store_api_key_at(path: &std::path::Path, key: &str) -> Result<(), ToolError> {
-    use yaml_rust2::yaml::Hash;
-    let mut store = read_store(path);
-    if let yaml_rust2::Yaml::Hash(root) = &mut store {
-        root.entry(yaml_rust2::Yaml::from_str("version")).or_insert(yaml_rust2::Yaml::Integer(1));
-        let refs = root.entry(yaml_rust2::Yaml::from_str("refs")).or_insert_with(|| yaml_rust2::Yaml::Hash(Hash::new()));
-        if !matches!(refs, yaml_rust2::Yaml::Hash(_)) {
-            *refs = yaml_rust2::Yaml::Hash(Hash::new());
+    // A line edit, not a re-render: the Harness store holds other tools' keys and a grant the app
+    // must not disturb, and it has to stay in the shape its own writer produces.
+    let text = std::fs::read_to_string(path).unwrap_or_default();
+    let newline = if text.contains("\r\n") { "\r\n" } else { "\n" };
+    let mut lines: Vec<String> = if text.is_empty() {
+        vec!["version: 1".to_string(), "refs:".to_string(), "records:".to_string()]
+    } else {
+        text.lines().map(str::to_string).collect()
+    };
+    let refs_at = lines.iter().position(|l| l.trim_end() == "refs:");
+    let entry = format!("  DEEPSEEK_API_KEY: {key}");
+    match refs_at {
+        Some(at) => {
+            let mut end = at + 1;
+            let mut replaced = false;
+            while end < lines.len() {
+                let line = &lines[end];
+                if !line.starts_with(' ') {
+                    break;
+                }
+                if line.trim_start().starts_with("DEEPSEEK_API_KEY:") {
+                    lines[end] = entry.clone();
+                    replaced = true;
+                }
+                end += 1;
+            }
+            if !replaced {
+                lines.insert(at + 1, entry);
+            }
         }
-        if let yaml_rust2::Yaml::Hash(refs) = refs {
-            refs.insert(yaml_rust2::Yaml::from_str("DEEPSEEK_API_KEY"), yaml_rust2::Yaml::String(key.to_string()));
+        None => {
+            let at = lines.iter().position(|l| l.trim_end() == "version: 1").map(|i| i + 1).unwrap_or(0);
+            lines.insert(at, "refs:".to_string());
+            lines.insert(at + 1, entry);
         }
     }
-    write_store(path, &store)
+    let mut out = lines.join(newline);
+    out.push_str(newline);
+    let tmp = path.with_extension("yaml.tmp");
+    if let Some(dir) = path.parent() {
+        std::fs::create_dir_all(dir).map_err(|e| ToolError::new(ErrorCode::FileError, format!("Could not create {}: {e}", dir.display())))?;
+    }
+    std::fs::write(&tmp, out.as_bytes()).map_err(|e| ToolError::new(ErrorCode::FileError, format!("Could not write {}: {e}", tmp.display())))?;
+    std::fs::rename(&tmp, path).map_err(|e| ToolError::new(ErrorCode::FileError, format!("Could not replace {}: {e}", path.display())))
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
