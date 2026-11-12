@@ -35,14 +35,22 @@ pub fn env_keys(get: impl Fn(&str) -> Option<String>) -> Vec<Detected> {
             out.push(Detected { suggestion: cfg(name, kind, model), reason: format!("Found {var} in your environment"), needs_key: false });
         }
     }
-    // Hosted APIs we know by name. Offered only when their key is already set, like OpenAI and
-    // Anthropic, so a paid service is never advertised to someone who has no key for it.
+    // Hosted APIs we know by name. A paid service is never advertised to someone who has no key
+    // for it, except the domestic (China) ones, whose key page is behind a phone number rather
+    // than a card: those are offered with a key box so one can be pasted in Settings → AI.
     for p in crate::providers::PROVIDERS {
-        if let Some(var) = p.key_names().find(|var| get(var).is_some_and(|v| !v.trim().is_empty())) {
+        let found = p.key_names().find(|var| get(var).is_some_and(|v| !v.trim().is_empty()));
+        if let Some(var) = found {
             out.push(Detected {
                 suggestion: cfg_at(p.name, p.kind, p.default_model, p.base_url),
                 reason: format!("Found {var} in your environment"),
                 needs_key: false,
+            });
+        } else if p.offer_without_key {
+            out.push(Detected {
+                suggestion: cfg_at(p.name, p.kind, p.default_model, p.base_url),
+                reason: format!("{}: paste its API key (or set {})", p.name, p.key_env),
+                needs_key: true,
             });
         }
     }
@@ -452,6 +460,30 @@ mod tests {
         }
     }
 
+    /// The domestic (China) APIs are offered before a key is set, each with its own endpoint, so a
+    /// person can paste a key in Settings → AI instead of typing a base URL by hand.
+    #[test]
+    fn domestic_apis_are_offered_without_a_key() {
+        let d = env_keys(|_| None);
+        for (name, base) in [
+            ("DeepSeek", "https://api.deepseek.com/v1"),
+            ("Moonshot", "https://api.moonshot.ai/v1"),
+            ("智谱 GLM (Zhipu)", "https://open.bigmodel.cn/api/paas/v4"),
+            ("阿里云百炼 (Qwen)", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+            ("火山方舟 (豆包)", "https://ark.cn-beijing.volces.com/api/v3"),
+            ("MiniMax", "https://api.minimaxi.com/v1"),
+            ("百度千帆 (文心)", "https://qianfan.baidubce.com/v2"),
+        ] {
+            let row = d.iter().find(|x| x.suggestion.name == name).unwrap_or_else(|| panic!("{name} offered"));
+            assert!(row.needs_key, "{name} asks for its key");
+            assert_eq!(row.suggestion.base_url.as_deref(), Some(base), "{name} endpoint");
+        }
+        // With the key in the environment the same row needs no pasting.
+        let set = env_keys(|v| (v == "DASHSCOPE_API_KEY").then(|| "k".to_string()));
+        let qwen = set.iter().find(|x| x.suggestion.name == "阿里云百炼 (Qwen)").expect("Qwen offered");
+        assert!(!qwen.needs_key && qwen.reason.contains("DASHSCOPE_API_KEY"));
+    }
+
     /// OpenCode Go is offered when its key is set, under either of its environment names.
     #[test]
     fn opencode_go_is_offered_only_with_its_key() {
@@ -482,8 +514,13 @@ mod tests {
         assert!(p.reason.contains("MOONSHOT_API_KEY"));
         assert_eq!(p.suggestion.base_url.as_deref(), Some("https://api.moonshot.ai/v1"));
         assert_eq!(p.suggestion.model.as_str(), "kimi-k3.1-pro");
-        // A key that nobody has does not add a row.
-        assert!(d.iter().all(|x| x.suggestion.name != "DeepSeek"));
+        // DeepSeek is domestic, so it is offered with a key box even though nobody set its key,
+        // and it still points at its own endpoint.
+        let ds = d.iter().find(|x| x.suggestion.name == "DeepSeek").expect("DeepSeek offered");
+        assert!(ds.needs_key);
+        assert_eq!(ds.suggestion.base_url.as_deref(), Some("https://api.deepseek.com/v1"));
+        // A provider that is neither found nor domestic is not advertised.
+        assert!(d.iter().all(|x| x.suggestion.name != "xAI (Grok)"));
     }
 
     #[test]

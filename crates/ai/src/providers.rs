@@ -19,6 +19,10 @@ pub struct Provider {
     pub default_model: &'static str,
     /// Its id in the shared models.dev catalogue, where it differs from ours.
     pub catalog_id: &'static str,
+    /// Offered in Settings → AI even before a key is set, so a person can paste one there.
+    /// Domestic (China) APIs are: they are the usual first choice locally, and their key pages are
+    /// behind a phone number rather than a credit card.
+    pub offer_without_key: bool,
 }
 
 /// The priced APIs we can talk to over an OpenAI-compatible endpoint. Pay-as-you-go services are
@@ -33,6 +37,7 @@ pub const PROVIDERS: &[Provider] = &[
         alt_key_env: None,
         default_model: "kimi-k3.1-pro",
         catalog_id: "moonshotai",
+        offer_without_key: true,
     },
     Provider {
         name: "DeepSeek",
@@ -42,6 +47,7 @@ pub const PROVIDERS: &[Provider] = &[
         alt_key_env: None,
         default_model: "deepseek-flash",
         catalog_id: "deepseek",
+        offer_without_key: true,
     },
     Provider {
         name: "xAI (Grok)",
@@ -51,6 +57,7 @@ pub const PROVIDERS: &[Provider] = &[
         alt_key_env: None,
         default_model: "grok-4.7",
         catalog_id: "xai",
+        offer_without_key: false,
     },
     Provider {
         name: "Groq",
@@ -60,6 +67,7 @@ pub const PROVIDERS: &[Provider] = &[
         alt_key_env: None,
         default_model: "openai/gpt-oss-120b",
         catalog_id: "groq",
+        offer_without_key: false,
     },
     Provider {
         name: "Mistral",
@@ -69,6 +77,7 @@ pub const PROVIDERS: &[Provider] = &[
         alt_key_env: None,
         default_model: "mistral-large-4",
         catalog_id: "mistral",
+        offer_without_key: false,
     },
     Provider {
         name: "Together",
@@ -78,6 +87,7 @@ pub const PROVIDERS: &[Provider] = &[
         alt_key_env: None,
         default_model: "deepseek-ai/DeepSeek-V4.1-Flash",
         catalog_id: "togetherai",
+        offer_without_key: false,
     },
     Provider {
         name: "Fireworks",
@@ -87,6 +97,7 @@ pub const PROVIDERS: &[Provider] = &[
         alt_key_env: None,
         default_model: "accounts/fireworks/models/gpt-oss-120b",
         catalog_id: "fireworks-ai",
+        offer_without_key: false,
     },
     Provider {
         name: "DeepInfra",
@@ -96,6 +107,58 @@ pub const PROVIDERS: &[Provider] = &[
         alt_key_env: None,
         default_model: "meta-llama/Llama-3.3-70B-Instruct-Turbo",
         catalog_id: "deepinfra",
+        offer_without_key: false,
+    },
+    // Domestic (China) APIs: offered in Settings → AI before a key is set (see `offer_without_key`).
+    Provider {
+        name: "智谱 GLM (Zhipu)",
+        kind: BackendKind::OpenaiCompatible,
+        base_url: "https://open.bigmodel.cn/api/paas/v4",
+        key_env: "ZHIPUAI_API_KEY",
+        alt_key_env: Some("ZHIPU_API_KEY"),
+        default_model: "glm-4.6",
+        catalog_id: "zhipuai",
+        offer_without_key: true,
+    },
+    Provider {
+        name: "阿里云百炼 (Qwen)",
+        kind: BackendKind::OpenaiCompatible,
+        base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        key_env: "DASHSCOPE_API_KEY",
+        alt_key_env: Some("QWEN_API_KEY"),
+        default_model: "qwen-plus",
+        catalog_id: "alibaba",
+        offer_without_key: true,
+    },
+    Provider {
+        name: "火山方舟 (豆包)",
+        kind: BackendKind::OpenaiCompatible,
+        base_url: "https://ark.cn-beijing.volces.com/api/v3",
+        key_env: "ARK_API_KEY",
+        alt_key_env: None,
+        default_model: "doubao-seed-1-6-250615",
+        catalog_id: "volcengine",
+        offer_without_key: true,
+    },
+    Provider {
+        name: "MiniMax",
+        kind: BackendKind::OpenaiCompatible,
+        base_url: "https://api.minimaxi.com/v1",
+        key_env: "MINIMAX_API_KEY",
+        alt_key_env: None,
+        default_model: "MiniMax-M2",
+        catalog_id: "minimax",
+        offer_without_key: true,
+    },
+    Provider {
+        name: "百度千帆 (文心)",
+        kind: BackendKind::OpenaiCompatible,
+        base_url: "https://qianfan.baidubce.com/v2",
+        key_env: "QIANFAN_API_KEY",
+        alt_key_env: None,
+        default_model: "ernie-4.5-turbo-128k",
+        catalog_id: "baidu",
+        offer_without_key: true,
     },
 ];
 
