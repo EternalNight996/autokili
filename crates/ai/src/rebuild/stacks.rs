@@ -184,6 +184,7 @@ mod tests {
         assert_eq!(found(&[("Cargo.toml", "[dependencies]\neframe = \"0.30\"\n")]), Some("Rust + egui (eframe)"));
         assert_eq!(found(&[("Cargo.toml", "[dependencies]\nmacroquad = \"0.4\"\n")]), Some("Rust + macroquad"));
         assert_eq!(found(&[("Cargo.toml", "[dependencies]\nmacroquad = \"0.4\"\negui = \"0.30\"\n")]), Some("Rust + macroquad"), "a game with an egui overlay");
+        assert_eq!(found(&[("src-tauri/tauri.conf.json", "{}")]), Some("Rust + Tauri"), "a Tauri window says so through its config");
         assert_eq!(found(&[("Cargo.toml", "[dependencies]\niced = \"0.13\"\n")]), Some(BUILDERS_CHOICE));
         assert_eq!(found(&[("Cargo.toml", "not [ toml")]), Some(BUILDERS_CHOICE));
         assert_eq!(found(&[("pyproject.toml", "")]), Some("Python"));
@@ -212,6 +213,14 @@ mod tests {
         assert_eq!(tool("build.gradle.kts"), Some("Gradle"));
         assert_eq!(tool("Makefile"), Some("Make"));
         assert_eq!(tool("notes.md"), None);
+        // A Tauri project keeps its Cargo.toml one folder down; its config names it.
+        {
+            let d = tempfile::tempdir().unwrap();
+            let conf = d.path().join("src-tauri").join("tauri.conf.json");
+            std::fs::create_dir_all(conf.parent().unwrap()).unwrap();
+            std::fs::write(&conf, "{}").unwrap();
+            assert_eq!(toolchain_in(d.path()).map(|t| t.name.as_str()), Some("Tauri"));
+        }
         for t in autokill_engine::toolchains::catalogue() {
             assert!(!t.found_by.is_empty() && !t.build.is_empty() && !t.test.is_empty(), "{}", t.name);
         }

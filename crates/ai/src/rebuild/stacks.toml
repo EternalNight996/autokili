@@ -22,6 +22,13 @@
 # "tailwind"): its `steps` are added to the stack's for the `stacks` it works with.
 #
 [[stack]]
+name = "Rust + Tauri"
+asked_by = [" tauri ", " with tauri ", " using tauri ", " in tauri "]
+uses = ["tauri"]
+found_by = ["src-tauri/tauri.conf.json"]
+steps = "Use Rust with Tauri v2 for a desktop app. Put the Rust side in app/src-tauri/: Cargo.toml (tauri as a dependency, tauri-build in build-dependencies), build.rs calling tauri_build::build(), src/main.rs starting the window, and tauri.conf.json naming the frontend folder and the icons the app ships. Put the UI in app/: plain HTML/CSS/JS when the app is simple, or Vite when it needs a build (then build.frontendDist in tauri.conf.json points at the built folder and `npm run build` must produce it). Keep the window size, title and layout the original has, and move data between the page and Rust through Tauri commands rather than shelling out. Every icon tauri.conf.json names must exist: draw a small PNG with code instead of borrowing artwork. Build with `cargo build --manifest-path src-tauri/Cargo.toml` until it succeeds, and run `cargo test --manifest-path src-tauri/Cargo.toml` for the Rust tests."
+
+[[stack]]
 name = "Builder's choice"
 found_by = ["package.json", "Cargo.toml", "go.mod", "pom.xml", "build.gradle", "build.gradle.kts", "*.sln", "*.csproj", "Gemfile", "composer.json", "CMakeLists.txt", "Makefile"]
 steps = "Use what their request names; otherwise choose the stack yourself: the one that best fits the request and the original. If the request names none and the capture shows what the original is built with (the script and stylesheet addresses in capture.json and page.html, for example /_next/ for Next.js or /_nuxt/ for Nuxt), use the same. For a website, create the project in app/ with a \"build\" script in package.json, then run `npm install` and `npm run build` from app/ until it succeeds: the output must be static files in app/dist, app/out or app/build (index.html at its top and each other page at its own path) that work when served as static files."

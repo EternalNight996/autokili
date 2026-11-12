@@ -3,6 +3,11 @@
 # {file} is replaced with the matched file; wildcard launch matches must be unique.
 
 [[toolchain]]
+name = "Tauri"
+found_by = ["src-tauri/tauri.conf.json"]
+build = ["cargo", "build", "--quiet", "--manifest-path", "src-tauri/Cargo.toml"]
+test = ["cargo", "test", "--quiet", "--manifest-path", "src-tauri/Cargo.toml"]
+[[toolchain]]
 name = "Rust"
 found_by = ["Cargo.toml"]
 build = ["cargo", "build", "--quiet"]
