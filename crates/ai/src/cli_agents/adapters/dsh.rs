@@ -156,7 +156,7 @@ fn missing_overlay() -> String {
 fn overlay_yaml(mcp: &McpCommand) -> String {
     let q = |s: &str| format!("'{}'", s.replace('\'', "''"));
     let args: String = mcp.args.iter().map(|a| format!("\n          - {}", q(a))).collect();
-    format!(
+    let mut yaml = format!(
         "# AutoKill's tool server for this run. Generated; safe to delete.\n\
          - insert:\n    \
            - id: {OVERLAY_ID}\n      \
@@ -168,7 +168,12 @@ fn overlay_yaml(mcp: &McpCommand) -> String {
                args:{args}\n        \
                toolCallTimeoutMs: 300000\n",
         q(&mcp.command)
-    )
+    );
+    // The headless profile ships the file credentials provider disabled, so the account grant a
+    // browser login writes would never be read. One entry turns it back on for this run, and a
+    // person who signed in needs no API key.
+    yaml.push_str("# Read the account grant a browser sign-in wrote.\n- id: credentials\n  disabled: false\n");
+    yaml
 }
 
 #[cfg(test)]
