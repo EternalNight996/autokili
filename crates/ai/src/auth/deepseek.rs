@@ -294,7 +294,11 @@ pub fn sign_in() -> Result<String, ToolError> {
         return Err(e);
     }
     reply(&mut stream, "已授权", "DeepSeek 账号已登录，可以关闭此页面回到 AutoKill。");
-    Ok("已授权：DeepSeek Platform（DeepSeek Harness 可以直接构建）".to_string())
+    Ok(if usable_api_key() {
+        "已授权：DeepSeek 账号已连接，Harness 可以直接构建".to_string()
+    } else {
+        "DeepSeek 账号已连接；这个 Harness 版本的构建还要一把 API Key（platform.deepseek.com → API keys），设置 DEEPSEEK_API_KEY 后即可".to_string()
+    })
 }
 
 fn token(bytes: usize) -> String {
@@ -337,6 +341,61 @@ fn store_grant_at(path: &std::path::Path, token: &str, issuer: &str) -> Result<(
     write_store(path, &store)
 }
 
+
+/// The DeepSeek API key the Harness store holds under `refs.DEEPSEEK_API_KEY`, when it looks
+/// like a real key: the Platform's keys are `sk-` followed by 32 characters. A shorter or
+/// differently shaped value is a placeholder someone pasted, and the Platform answers 401 for it,
+/// so a build must not be told it is signed in.
+pub fn usable_api_key() -> bool {
+    if let Some(key) = std::env::var("DEEPSEEK_API_KEY").ok().filter(|k| looks_like_key(k)) {
+        let _ = key;
+        return true;
+    }
+    let Some(path) = credentials_file() else { return false };
+    stored_api_key(&path).is_some_and(|k| looks_like_key(&k))
+}
+
+fn looks_like_key(key: &str) -> bool {
+    let key = key.trim();
+    key.starts_with("sk-") && key.len() >= 35 && key.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+}
+
+/// `refs.DEEPSEEK_API_KEY` in the Harness store: the value the Models page writes.
+fn stored_api_key(path: &std::path::Path) -> Option<String> {
+    let store = read_store(path);
+    let refs = store["refs"].as_hash()?;
+    let value = refs.get(&yaml_rust2::Yaml::from_str("DEEPSEEK_API_KEY"))?;
+    let text = value.as_str()?;
+    (!text.trim().is_empty()).then(|| text.trim().to_string())
+}
+
+/// Saves a DeepSeek API key where the Harness reads it (`refs.DEEPSEEK_API_KEY`), refusing a value
+/// that is not shaped like one rather than storing a key the Platform will refuse.
+pub fn store_api_key(key: &str) -> Result<(), ToolError> {
+    let key = key.trim();
+    if !looks_like_key(key) {
+        return Err(ToolError::new(ErrorCode::BadInput, "That does not look like a DeepSeek API key.")
+            .with_remediation("Copy the whole key from platform.deepseek.com → API keys (it starts with sk-)."));
+    }
+    let path = credentials_file().ok_or_else(|| ToolError::new(ErrorCode::FileError, "No home folder for the Harness credentials."))?;
+    store_api_key_at(&path, key)
+}
+
+fn store_api_key_at(path: &std::path::Path, key: &str) -> Result<(), ToolError> {
+    use yaml_rust2::yaml::Hash;
+    let mut store = read_store(path);
+    if let yaml_rust2::Yaml::Hash(root) = &mut store {
+        root.entry(yaml_rust2::Yaml::from_str("version")).or_insert(yaml_rust2::Yaml::Integer(1));
+        let refs = root.entry(yaml_rust2::Yaml::from_str("refs")).or_insert_with(|| yaml_rust2::Yaml::Hash(Hash::new()));
+        if !matches!(refs, yaml_rust2::Yaml::Hash(_)) {
+            *refs = yaml_rust2::Yaml::Hash(Hash::new());
+        }
+        if let yaml_rust2::Yaml::Hash(refs) = refs {
+            refs.insert(yaml_rust2::Yaml::from_str("DEEPSEEK_API_KEY"), yaml_rust2::Yaml::String(key.to_string()));
+        }
+    }
+    write_store(path, &store)
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -366,6 +425,18 @@ mod tests {
         let second = device_id_at(&path).unwrap();
         assert_eq!(first, second);
         assert_eq!(first.len(), 36);
+    }
+
+    #[test]
+    fn only_a_key_shaped_like_a_deepseek_key_counts_and_it_is_stored_in_refs() {
+        let (_dir, path) = store();
+        assert!(!store_api_key_at(&path, "sk-short").is_err(), "a short key is still written");
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(text.contains("DEEPSEEK_API_KEY: sk-short"), "{text}");
+        assert!(!looks_like_key("sk-short"));
+        assert!(looks_like_key("sk-0123456789abcdef0123456789abcdef"));
+        store_api_key_at(&path, "sk-0123456789abcdef0123456789abcdef").unwrap();
+        assert_eq!(stored_api_key(&path).as_deref(), Some("sk-0123456789abcdef0123456789abcdef"));
     }
 
     #[test]
