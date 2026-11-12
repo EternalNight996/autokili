@@ -43,7 +43,7 @@ impl AgentAdapter for DeepSeekHarness {
     /// writes it (Models), which is the one step that makes a headless build answer at all.
     fn sign_in(&self) -> Option<SignIn> {
         Some(SignIn {
-            label: "Open DeepSeek Harness → Models to paste the DeepSeek key",
+            label: "在浏览器里登录 DeepSeek 账号，授权后自动回到 AutoKill",
             program: "dsh",
             args: &["web"],
         })
@@ -291,7 +291,7 @@ mod tests {
         let step = DeepSeekHarness.sign_in().expect("the harness has a sign-in step");
         assert_eq!(step.program, "dsh");
         assert_eq!(step.args, ["web"]);
-        assert!(step.label.contains("Models"), "{}", step.label);
+        assert!(step.label.contains("DeepSeek"), "{}", step.label);
     }
 
     /// A path or a flag with a quote in it must not break the overlay's YAML.

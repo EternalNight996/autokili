@@ -636,9 +636,23 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
                         extracts = Some(Some(b.name.clone()));
                     }
                 }
-                // An agent that keeps its key in its own store gets one button to open that page.
+                // An agent that keeps its account in its own store: one button that finishes the
+                // browser login back here, or 已授权 once the grant is stored (checked twice a second).
                 if b.kind == BackendKind::AgentCli && autokill_ai::cli_agents::sign_in_for(&b.model).is_some() {
-                    if widgets::secondary(ui, None, "授权登录").clicked() {
+                    let cache = egui::Id::new(("authorized", &b.name));
+                    let now = ui.input(|i| i.time);
+                    let known = ui.data(|d| d.get_temp::<(f64, bool)>(cache));
+                    let authorized = match known {
+                        Some((at, value)) if now - at < 2.0 => value,
+                        _ => {
+                            let value = autokill_ai::cli_agents::sign_in_authorized(&b.model);
+                            ui.data_mut(|d| d.insert_temp(cache, (now, value)));
+                            value
+                        }
+                    };
+                    if authorized {
+                        widgets::pill(ui, "已授权", t.success, t.raised);
+                    } else if widgets::secondary(ui, None, "授权登录").clicked() {
                         sign_in = Some(b.name.clone());
                     }
                 }

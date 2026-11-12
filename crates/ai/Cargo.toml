@@ -22,6 +22,9 @@ log = { workspace = true }
 regex = { workspace = true }
 toml = { workspace = true }
 ureq = "3"
+base64 = "0.23"
+sha2 = "0.10"
+yaml-rust2 = "0.10"
 dirs = "6"
 
 [target.'cfg(target_os = "linux")'.dependencies]

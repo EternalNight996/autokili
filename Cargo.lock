@@ -548,6 +548,7 @@ dependencies = [
  "autokill-formats",
  "autokill-platform",
  "autokill-testkit",
+ "base64 0.23.1",
  "dirs",
  "keyring",
  "log",
@@ -555,9 +556,11 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "sha2",
  "tempfile",
  "toml 0.9.12+spec-1.1.0",
  "ureq",
+ "yaml-rust2",
 ]
 
 [[package]]

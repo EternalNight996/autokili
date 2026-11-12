@@ -8,6 +8,7 @@
 
 pub mod agent;
 pub mod anthropic;
+pub mod auth;
 pub mod cli_agents;
 pub mod config;
 pub mod context;

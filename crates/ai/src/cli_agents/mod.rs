@@ -249,9 +249,19 @@ pub fn sign_in_for(agent: &str) -> Option<adapters::SignIn> {
     adapter_for(agent).sign_in()
 }
 
-/// Runs the agent's own sign-in step (its key page) and reports what was started. The program is
-/// a browser page or a small window, so it is started and handed off: the app never freezes on it.
+/// Whether this agent already holds the sign-in its builds need, so Settings can say 已授权
+/// instead of offering the button again.
+pub fn sign_in_authorized(agent: &str) -> bool {
+    adapter_for(agent).ids().contains(&"dsh") && crate::auth::deepseek::has_grant()
+}
+
+/// Runs the agent's own sign-in step and reports how it ended. DeepSeek Harness goes through the
+/// Platform's PKCE flow: the browser page is opened, the loopback callback carries the code, and
+/// the grant it writes is what a headless build reads. Other agents hand a page off and return.
 pub fn start_sign_in(agent: &str) -> Result<String, ToolError> {
+    if adapter_for(agent).ids().contains(&"dsh") {
+        return crate::auth::deepseek::sign_in();
+    }
     let Some(step) = sign_in_for(agent) else {
         return Err(ToolError::new(ErrorCode::BadInput, format!("{agent} signs in on its own; there is nothing to open.")));
     };
