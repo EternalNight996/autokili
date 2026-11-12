@@ -1,6 +1,6 @@
 AutoKill app icon
 
-The AutoKill mark (a rounded dark tile with an "AK" monogram) was drawn for this project and is
+The AutoKill mark (two crossed rifles on a rounded dark tile) was drawn for this project and is
 released under the same MIT OR Apache-2.0 licence as the code (LICENSE-MIT, LICENSE-APACHE).
 
 It replaces the upstream ArtCraft icon (the raven), which this fork neither uses nor redistributes.

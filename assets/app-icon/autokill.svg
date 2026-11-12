@@ -1,11 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="AutoKill">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <title>AutoKill</title>
-  <!-- flat rounded tile -->
-  <rect x="0" y="0" width="1024" height="1024" rx="204.8" ry="204.8" fill="#101014"/>
-  <!-- AK mark -->
-  <text x="512" y="636.6" text-anchor="middle" fill="#4E7BFB"
-        font-family="'Segoe UI', 'Segoe UI Bold', Arial, Helvetica, sans-serif"
-        font-weight="700" font-size="531">AK</text>
-  <!-- accent bar -->
-  <rect x="358.4" y="711.72" width="307.2" height="40.96" fill="#1659C4"/>
+  <desc>Two crossed rifles on a rounded dark tile.</desc>
+  <rect width="1024" height="1024" rx="205" ry="205" fill="#0d1119"/>
+  <g id="rifle">
+    <rect x="-48" y="-2.2" width="28" height="4.4"/>
+    <rect x="-34" y="-6.8" width="6" height="4.6"/>
+    <rect x="-22" y="-4.6" width="12" height="9.2"/>
+    <rect x="-9" y="-6" width="19" height="12"/>
+    <polygon points="9,-5 46,-2 46,3 9,2.4"/>
+    <polygon points="-4,6 9,6 5,19 -6,19"/>
+    <polygon points="11,6 18,6 14,16 8,16"/>
+  </g>
+  <use href="#rifle" transform="translate(512 512) rotate(-33) scale(8.4)" fill="#788fbe" stroke="#0d1119" stroke-width="0.65"/>
+  <use href="#rifle" transform="translate(512 512) rotate(33) scale(8.4)" fill="#f5f9ff"/>
 </svg>
