@@ -125,7 +125,11 @@ autokill-cli mcp                       # 以 MCP 服务器运行（stdio）
 | <img src="https://raw.githubusercontent.com/storytold/texturecraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.texturecraft.png" alt="" width="32" height="32"> | **TextureCraft** | 3D 贴图绘制 | [GitHub](https://github.com/storytold/texturecraft) | [网站](https://getartcraft.com/apps/texturecraft) |
 | <img src="https://raw.githubusercontent.com/storytold/materialcraft/main/assets/app-icon/hicolor/64x64/apps/ai.storyteller.materialcraft.png" alt="" width="32" height="32"> | **MaterialCraft** | 节点式程序化材质 | [GitHub](https://github.com/storytold/materialcraft) | [网站](https://getartcraft.com/apps/materialcraft) |
 | <img src="assets/app-icon/hicolor/64x64/apps/ai.autokill.app.png" alt="" width="32" height="32"> | **AutoKill** | 看清任何软件，然后做出自己的 | [GitHub](https://github.com/EternalNight996/autokill) | 本仓库 |
+| <img src="https://raw.githubusercontent.com/EternalNight996/coretempcraft/master/assets/app-icon/64.png" alt="" width="32" height="32"> | **CoreTempCraft** ⟲ | CPU 频率与温度实时监控（Windows）· 用 AutoKill 复刻 | [GitHub](https://github.com/EternalNight996/coretempcraft) | |
+| <img src="https://raw.githubusercontent.com/EternalNight996/obsidiancraft/master/assets/app-icon/64.png" alt="" width="32" height="32"> | **ObsidianCraft** ⟲ | 本地 vault + 关系图的笔记应用 · 用 AutoKill 复刻 | [GitHub](https://github.com/EternalNight996/obsidiancraft) | |
 | <img src="https://raw.githubusercontent.com/tangency-labs/solidcraft/main/assets/icons/app/linux/exports/hicolor/64x64/apps/io.tangencylabs.solidcraft.png" alt="" width="32" height="32"> | **SolidCraft** | 参数化 3D CAD（社区应用，Tangency Labs） | [GitHub](https://github.com/tangency-labs/solidcraft) | |
+
+<sub>⟲ 标记的两个应用是用 AutoKill 复刻出来的实例（非上游 ArtCraft 出品），源码与截图都在各自仓库里。</sub>
 
 ## 🛠 开发中
 
