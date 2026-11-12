@@ -245,6 +245,12 @@ pub fn adapter_for(agent: &str) -> Arc<dyn AgentAdapter> {
 
 /// The sign-in step an agent CLI has, for a button in Settings → AI. `None` when the agent signs
 /// in on its own (an API backend, or one whose only route is a terminal the person already uses).
+/// Whether this agent takes an API key from the app (DeepSeek Harness does, as DEEPSEEK_API_KEY),
+/// so Settings offers a key field for it the way it does for an API backend.
+pub fn accepts_key(agent: &str) -> bool {
+    adapter_for(agent).ids().contains(&"dsh")
+}
+
 pub fn sign_in_for(agent: &str) -> Option<adapters::SignIn> {
     adapter_for(agent).sign_in()
 }
@@ -1073,6 +1079,13 @@ fn run_cli(spec: &CliSpec, text: &str, retry: bool, tx: &Sender<AgentEvent>, sto
         None => adapter.mcp_env(&mcp),
         Some(host) => adapter.remote_tool_server(host, &mcp),
     };
+    // DeepSeek Harness reads its model key from DEEPSEEK_API_KEY when its own store has none: a key
+    // saved for this backend is handed to this turn's process only (the wiring MengBot uses).
+    if adapter.ids().contains(&"dsh")
+        && let Some(key) = spec.key.as_deref().map(str::trim).filter(|k| !k.is_empty())
+    {
+        env.push(("DEEPSEEK_API_KEY", key.to_string()));
+    }
     match tool_env {
         Ok(var) => env.extend(var),
         Err(e) => {

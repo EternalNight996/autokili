@@ -574,7 +574,7 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
             // here without removing the AI (#1358). Every API backend can need one; agent apps
             // sign in their own way. The field stays even when a key is saved, so a replacement
             // doesn't need Forget first.
-            if b.kind != BackendKind::AgentCli {
+            if b.kind != BackendKind::AgentCli || autokill_ai::cli_agents::accepts_key(&b.model) {
                 // A save or forget for this backend is still running: no later action may be
                 // submitted until it finishes, so workers can't overtake one another. Other
                 // backends keep their controls.
