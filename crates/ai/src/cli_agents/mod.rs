@@ -258,9 +258,8 @@ pub fn sign_in_for(agent: &str) -> Option<adapters::SignIn> {
 /// Whether this agent already holds the sign-in its builds need, so Settings can say 已授权
 /// instead of offering the button again.
 pub fn sign_in_authorized(agent: &str) -> bool {
-    // A grant alone does not answer a build in this Harness build: the route it uses wants an
-    // API key, so 已授权 means a key the Platform will accept is stored (or in the environment).
-    adapter_for(agent).ids().contains(&"dsh") && crate::auth::deepseek::usable_api_key()
+    // Signed in means the account grant the browser login stored is there.
+    adapter_for(agent).ids().contains(&"dsh") && crate::auth::deepseek::has_grant()
 }
 
 /// Runs the agent's own sign-in step and reports how it ended. DeepSeek Harness goes through the
