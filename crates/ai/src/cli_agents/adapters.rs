@@ -42,12 +42,29 @@ pub struct ArgsCx<'a> {
     pub question: bool,
 }
 
+
+/// The step that gives an agent CLI its account: a program to run, usually one that opens the
+/// agent's own sign-in or key page. Shown as a button, so a person never has to type a command.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct SignIn {
+    /// What the button does, in one line, for the person reading it.
+    pub label: &'static str,
+    /// The program to start.
+    pub program: &'static str,
+    /// Its arguments.
+    pub args: &'static [&'static str],
+}
 /// One way of driving an agent CLI.
 pub trait AgentAdapter: Send + Sync {
     /// The agent id this adapter is registered under (`claude-code`), plus any other names.
     fn ids(&self) -> &'static [&'static str];
     /// argv after the program for one message.
     fn args(&self, cx: &ArgsCx) -> Vec<String>;
+    /// The step that gets this agent an account or a key, when it has one a button can run.
+    fn sign_in(&self) -> Option<SignIn> {
+        None
+    }
+
     /// Whether this agent supplies its own live model and thinking choices.
     fn has_model_catalog(&self) -> bool {
         false

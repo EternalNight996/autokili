@@ -1326,6 +1326,23 @@ impl CraftApp {
         self.agent_connection_jobs.insert(job, name);
     }
 
+    /// Runs an agent's own sign-in step (its key page) and reports it under the backend, the way
+    /// a connection check does. The page stays open for the person to paste a key; nothing waits.
+    pub fn sign_in_agent(&mut self, name: String) {
+        let Some(model) = self.backends.iter().find(|b| b.name == name).map(|b| b.model.clone()) else {
+            return;
+        };
+        if autokill_ai::cli_agents::sign_in_for(&model).is_none() {
+            return;
+        }
+        self.agent_connections.insert(name.clone(), None);
+        let shown = name.clone();
+        self.jobs.spawn(tr("Open the sign-in page"), false, move |_| {
+            let status = autokill_ai::cli_agents::start_sign_in(&model).map_err(|e| e.for_people());
+            Ok(Done::AgentConnection(shown, status))
+        });
+    }
+
     pub fn add_backend(&mut self, config: BackendConfig, key: Option<String>) {
         let hub = self.hub.clone();
         let name = config.name.clone();

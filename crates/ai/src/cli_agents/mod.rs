@@ -243,6 +243,39 @@ pub fn adapter_for(agent: &str) -> Arc<dyn AgentAdapter> {
     AgentAdapters::built_in().for_agent(agent)
 }
 
+/// The sign-in step an agent CLI has, for a button in Settings → AI. `None` when the agent signs
+/// in on its own (an API backend, or one whose only route is a terminal the person already uses).
+pub fn sign_in_for(agent: &str) -> Option<adapters::SignIn> {
+    adapter_for(agent).sign_in()
+}
+
+/// Runs the agent's own sign-in step (its key page) and reports what was started. The program is
+/// a browser page or a small window, so it is started and handed off: the app never freezes on it.
+pub fn start_sign_in(agent: &str) -> Result<String, ToolError> {
+    let Some(step) = sign_in_for(agent) else {
+        return Err(ToolError::new(ErrorCode::BadInput, format!("{agent} signs in on its own; there is nothing to open.")));
+    };
+    let program = autokill_platform::which::which_in(step.program, autokill_platform::which::search_path())
+        .into_iter()
+        .next()
+        .ok_or_else(|| {
+            ToolError::new(ErrorCode::NotFound, format!("{} is not installed on this computer.", step.program))
+                .with_remediation(format!("Install {}, then try again.", step.program))
+        })?;
+    let mut process = Process::new(&program).timeout(Duration::from_secs(30 * 60)).hands_off();
+    for a in step.args {
+        process = process.arg(a);
+    }
+    let running = process.spawn()?;
+    let pid = running.pid();
+    // The page stays up while the person pastes the key; the supervisor notices when it ends.
+    std::thread::spawn(move || {
+        let _ = running.wait();
+    });
+    Ok(format!("{} (pid {pid})", step.label))
+}
+
+
 /// The MCP server command handed to the CLI.
 #[derive(Debug, Clone, PartialEq)]
 pub struct McpCommand {

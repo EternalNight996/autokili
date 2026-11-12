@@ -38,6 +38,17 @@ impl AgentAdapter for DeepSeekHarness {
         true
     }
 
+    /// The harness keeps its model keys in its own credential service, and the headless profile
+    /// reads that service rather than the desktop app's sign-in. `dsh web` opens the page that
+    /// writes it (Models), which is the one step that makes a headless build answer at all.
+    fn sign_in(&self) -> Option<SignIn> {
+        Some(SignIn {
+            label: "Open DeepSeek Harness → Models to paste the DeepSeek key",
+            program: "dsh",
+            args: &["web"],
+        })
+    }
+
     /// The headless task includes the preamble, with no added or removed whitespace.
     fn stdin_text(&self, preamble: &str, prompt: &str) -> String {
         format!("{preamble}{prompt}")
@@ -272,6 +283,15 @@ mod tests {
         assert_eq!(DeepSeekHarness.required_flags(), (&["--help"][..], &["--profile"][..]));
         assert!(!DeepSeekHarness.plain_fallback());
         assert!(!DeepSeekHarness.streams_json());
+    }
+
+    /// A build that stops on a missing key offers one button: the page that writes the key.
+    #[test]
+    fn the_sign_in_step_opens_the_harness_models_page() {
+        let step = DeepSeekHarness.sign_in().expect("the harness has a sign-in step");
+        assert_eq!(step.program, "dsh");
+        assert_eq!(step.args, ["web"]);
+        assert!(step.label.contains("Models"), "{}", step.label);
     }
 
     /// A path or a flag with a quote in it must not break the overlay's YAML.

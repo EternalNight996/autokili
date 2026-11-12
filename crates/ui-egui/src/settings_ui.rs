@@ -333,6 +333,7 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
     let (mut pick, mut builds, mut extracts, mut toggle, mut remove) = (None, None, None, None, None);
     let (mut choose_program, mut usual_program, mut use_program) = (None, None, None);
     let mut check_agent = None;
+    let mut sign_in: Option<String> = None;
     let mut save_folder = None;
     // Taken out while the rows borrow the app, and put back after them.
     let mut folder_drafts = std::mem::take(&mut app.folder_inputs);
@@ -635,6 +636,12 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
                         extracts = Some(Some(b.name.clone()));
                     }
                 }
+                // An agent that keeps its key in its own store gets one button to open that page.
+                if b.kind == BackendKind::AgentCli && autokill_ai::cli_agents::sign_in_for(&b.model).is_some() {
+                    if widgets::secondary(ui, None, "授权登录").clicked() {
+                        sign_in = Some(b.name.clone());
+                    }
+                }
                 if b.kind == BackendKind::AgentCli && b.ssh_host.as_deref().is_none_or(|host| host.trim().is_empty()) {
                     let pending = app.agent_connections.get(&b.name) == Some(&None);
                     ui.add_enabled_ui(!pending, |ui| {
@@ -694,6 +701,9 @@ fn ai(app: &mut CraftApp, ui: &mut Ui) {
     }
     if let Some(name) = check_agent {
         app.check_agent_connection(name);
+    }
+    if let Some(name) = sign_in {
+        app.sign_in_agent(name);
     }
     if let Some(name) = choose_program {
         app.picking_program_for = Some(name);
