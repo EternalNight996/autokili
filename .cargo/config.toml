@@ -1,0 +1,9 @@
+[alias]
+xtask = "run --quiet --package xtask --"
+
+# Every build embeds the craft-fonts checkout that sits next to this repository, so CJK,
+# Japanese, Korean, Arabic, Thai and Georgian glyphs render instead of boxes. The value is
+# relative to the directory cargo runs in (the repository root). If the checkout is missing a
+# build still succeeds, just without the extra glyphs.
+[env]
+CRAFT_FONTS_DIR = { value = "../craft-fonts", relative = true }

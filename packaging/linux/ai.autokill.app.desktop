@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=AutoKill
+GenericName=Software Explorer
+Comment=Find out how any software works, then craft your own
+Exec=autokill %F
+TryExec=autokill
+Icon=ai.autokill.app
+Terminal=false
+StartupNotify=true
+StartupWMClass=ai.autokill.app
+Categories=Development;Debugger;
+Keywords=reverse engineering;disassembler;binary;analysis;executable;decompiler;inspect;

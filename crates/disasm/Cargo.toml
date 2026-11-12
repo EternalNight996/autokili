@@ -1,0 +1,22 @@
+[package]
+name = "autokill-disasm"
+description = "AutoKill's own native engine: decoding, functions, control flow, references, pseudo-C"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+autokill-formats = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+iced-x86 = { workspace = true }
+yaxpeax-arm = { workspace = true }
+yaxpeax-arch = { workspace = true }
+
+[dev-dependencies]
+autokill-testkit = { workspace = true }

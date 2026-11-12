@@ -1,0 +1,34 @@
+[package]
+name = "autokill-cli"
+description = "AutoKill on the command line: every tool, the MCP server, setup and doctor"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+autokill-engine = { workspace = true }
+autokill-engines = { workspace = true }
+autokill-evidence = { workspace = true }
+autokill-platform = { workspace = true }
+autokill-mcp = { workspace = true }
+autokill-ai = { workspace = true }
+autokill-setup = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+clap = { version = "4", features = ["derive"] }
+ctrlc = { version = "3", features = ["termination"] }
+
+[features]
+wasm-plugins = ["autokill-engine/wasm-plugins"]
+
+[dev-dependencies]
+tempfile = "3"
+
+[build-dependencies]
+# The DPI-aware manifest for autokill-cli.exe; build.rs only uses it when targeting Windows.
+winresource = "0.1"

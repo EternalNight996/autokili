@@ -1,0 +1,21 @@
+[package]
+name = "autokill-analysis"
+description = "Analyzers that turn parsed targets into evidence for AutoKill"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+autokill-evidence = { workspace = true }
+autokill-formats = { workspace = true }
+autokill-disasm = { workspace = true }
+autokill-js = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+autokill-testkit = { workspace = true }

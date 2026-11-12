@@ -1,0 +1,21 @@
+[package]
+name = "autokill-mcp"
+description = "The AutoKill MCP server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+autokill-evidence = { workspace = true }
+autokill-engine = { workspace = true }
+autokill-platform = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"
