@@ -2,7 +2,7 @@
 //! Seedream, SiliconFlow): one POST to {base}/images/generations with the model, the prompt and
 //! a size, answered with a picture address. Prices come from the asset table.
 
-use super::{AssetProvider, AssetRequest, Generated, Shape, SizeBy};
+use super::{AssetProvider, AssetRequest, Generated, Shape};
 use autokill_evidence::{ErrorCode, ToolError};
 use serde_json::{Value, json};
 use std::io::Read;

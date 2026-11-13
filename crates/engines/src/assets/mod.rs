@@ -4,7 +4,9 @@
 //! ([`Catalogue`]), so a cost is known before anything is spent, and every generation reports
 //! what it cost. Audio would be one more [`AssetRequest`] variant and table.
 
+pub mod aliyun;
 pub mod fal;
+pub mod minimax;
 pub mod openai_images;
 
 use autokill_evidence::{ErrorCode, ToolError};
@@ -320,6 +322,10 @@ impl AssetProviders {
         for vendor in openai_images::VENDORS {
             providers.push(Arc::new(openai_images::OpenAiImages::new(*vendor)));
         }
+        // Two domestic APIs with shapes of their own: MiniMax answers picture addresses, and
+        // Wanxiang runs the picture as a task that is polled.
+        providers.push(Arc::new(minimax::MiniMax::default()));
+        providers.push(Arc::new(aliyun::Aliyun::default()));
         AssetProviders { providers }
     }
 
