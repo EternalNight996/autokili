@@ -29,6 +29,10 @@ pub(crate) const MAX_RETRY_WAIT: u64 = 15 * 60;
 pub(crate) const CONTINUE_TURN: &str =
     "Your last turn was cut off. Carry on from where you stopped: look at what's already in app/ and your checklist, then finish the task.";
 
+/// Appended to a retried harness turn whose tool call arrived as invalid JSON: the repair is in
+/// the model's own output, so the next attempt is told the one rule it broke.
+pub(crate) const JSON_REPAIR: &str = "Your last tool call was not valid JSON and the turn was refused. Continue the same task, and when you call a tool send only well-formed JSON arguments: escape every newline and double quote inside a string value, and keep prose out of the arguments.";
+
 impl TurnFailure {
     pub const fn new(kind: FailureKind) -> Self {
         Self { kind, retry_after_secs: None }

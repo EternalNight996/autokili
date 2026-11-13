@@ -1054,7 +1054,16 @@ fn run_cli(spec: &CliSpec, text: &str, retry: bool, tx: &Sender<AgentEvent>, sto
         mcp.command = path;
     }
     let resume = session.lock().unwrap_or_else(PoisonError::into_inner).clone();
-    let text = if retry && adapter.resumes() && resume.is_some() { crate::failure::CONTINUE_TURN } else { text };
+    // A retry after a malformed tool call re-asks with the brief and one repair rule: the harness
+    // cannot continue its headless session, and the model's own JSON is what failed.
+    let text = if retry && adapter.resumes() && resume.is_some() {
+        crate::failure::CONTINUE_TURN.to_string()
+    } else if retry && adapter.ids().contains(&"dsh") {
+        format!("{text}\n\n{}", crate::failure::JSON_REPAIR)
+    } else {
+        text.to_string()
+    };
+    let text = text.as_str();
     let builder = spec.builder.is_some();
     // A question goes only to an agent that can be held to reading (a fallback adapter can't).
     if spec.question && !adapter.answers_questions() {
