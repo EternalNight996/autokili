@@ -50,3 +50,28 @@ endpoint = "tripo3d/p1/image-to-3d"
 usd = 0.40
 textured_usd = 0.50
 faces = [48, 20000]
+
+# 国内图片厂商（OpenAI images 形状）：价格按 ¥→$ 7.2 折算，2026-11 官网价。
+[[image]]
+id = "cogview-4"
+provider = "zhipu"
+name = "CogView-4（智谱）"
+endpoint = "cogview-4"
+usd_per_image = 0.0084
+licence = "智谱开放平台服务条款（商用需按其条款）"
+
+[[image]]
+id = "doubao-seedream-3"
+provider = "volcengine"
+name = "Doubao-Seedream 3.0（火山方舟）"
+endpoint = "doubao-seedream-3-0-t2i-250415"
+usd_per_image = 0.0347
+licence = "火山方舟服务条款（商用按其条款）"
+
+[[image]]
+id = "kolors"
+provider = "siliconflow"
+name = "Kolors（硅基流动）"
+endpoint = "Kwai-Kolors/Kolors"
+usd_per_image = 0.0139
+licence = "Kolors 模型许可见其仓库"

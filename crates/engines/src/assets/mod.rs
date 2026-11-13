@@ -5,6 +5,7 @@
 //! what it cost. Audio would be one more [`AssetRequest`] variant and table.
 
 pub mod fal;
+pub mod openai_images;
 
 use autokill_evidence::{ErrorCode, ToolError};
 use serde::Deserialize;
@@ -314,7 +315,12 @@ impl Default for AssetProviders {
 impl AssetProviders {
     /// fal.ai.
     pub fn built_in() -> AssetProviders {
-        AssetProviders { providers: vec![Arc::new(fal::Fal::default())] }
+        let mut providers: Vec<Arc<dyn AssetProvider>> = vec![Arc::new(fal::Fal::default())];
+        // Domestic picture APIs that speak the OpenAI images shape need no adapter of their own.
+        for vendor in openai_images::VENDORS {
+            providers.push(Arc::new(openai_images::OpenAiImages::new(*vendor)));
+        }
+        AssetProviders { providers }
     }
 
     /// Add a provider, or replace the one with the same id.
@@ -439,7 +445,10 @@ mod tests {
             }
         }
         let mut r = AssetProviders::built_in();
-        assert_eq!(r.ids(), vec!["fal"]);
+        assert!(r.ids().contains(&"fal"), "{:?}", r.ids());
+        for vendor in openai_images::VENDORS {
+            assert!(r.ids().contains(&vendor.id), "{} is registered", vendor.id);
+        }
         let mut m = Catalogue::fallback().image_model(None).unwrap().clone();
         m.provider = "stub".into();
         let req = AssetRequest::Image { model: &m, prompt: "a crate", shape: Shape::Square };

@@ -170,7 +170,7 @@ fn base64_encode(bytes: &[u8]) -> String {
     base64::engine::general_purpose::STANDARD.encode(bytes)
 }
 
-fn base64_decode(s: &str) -> Result<Vec<u8>, ToolError> {
+pub(crate) fn base64_decode(s: &str) -> Result<Vec<u8>, ToolError> {
     use base64::Engine as _;
     base64::engine::general_purpose::STANDARD.decode(s.trim()).map_err(|e| ToolError::new(ErrorCode::GarbledOutput, format!("invalid base64: {e}")))
 }
