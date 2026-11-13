@@ -473,6 +473,10 @@ mod tests {
             ("火山方舟 (豆包)", "https://ark.cn-beijing.volces.com/api/v3"),
             ("MiniMax", "https://api.minimaxi.com/v1"),
             ("百度千帆 (文心)", "https://qianfan.baidubce.com/v2"),
+            ("Kimi 中国站 (Moonshot CN)", "https://api.moonshot.cn/v1"),
+            ("腾讯混元 (Hunyuan)", "https://api.hunyuan.cloud.tencent.com/v1"),
+            ("讯飞星火 (Spark)", "https://spark-api-open.xf-yun.com/v1"),
+            ("硅基流动 (SiliconFlow)", "https://api.siliconflow.cn/v1"),
         ] {
             let row = d.iter().find(|x| x.suggestion.name == name).unwrap_or_else(|| panic!("{name} offered"));
             assert!(row.needs_key, "{name} asks for its key");
